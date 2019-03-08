@@ -1,17 +1,19 @@
 //See: https://www.gatsbyjs.org/docs/node-apis/
 
 const path = require("path")
+const _ = require("lodash")
 
 exports.createPages = ({ actions, graphql }) => {
   const { createPage } = actions
 
   const blogPostTemplate = path.resolve(`src/templates/blogTemplate.js`)
+  const listTemplate = path.resolve("./src/templates/blog-list-template.js")
+  const tagTemplate = path.resolve("src/templates/tags.js")
 
   return graphql(`
     {
       allMarkdownRemark(
         sort: { order: DESC, fields: [frontmatter___date] }
-        filter: { frontmatter: { draft: { eq: false } } }
         limit: 1000
       ) {
         edges {
@@ -19,6 +21,7 @@ exports.createPages = ({ actions, graphql }) => {
             frontmatter {
               path
               draft
+              tags
             }
           }
         }
@@ -47,13 +50,35 @@ exports.createPages = ({ actions, graphql }) => {
       var getPath = (index) => index === 0 ? `/` : `/page/${index + 1}`
       createPage({
         path: getPath(i),
-        component: path.resolve("./src/templates/blog-list-template.js"),
+        component: listTemplate,
         context: {
           limit: postsPerPage,
           skip: i * postsPerPage,
 
           next: i < numPages - 1 ? getPath(i + 1) : null,
           prev: i > 0 ? getPath(i - 1) : null
+        },
+      })
+    })
+
+    // Tag pages:
+    let tags = []
+    // Iterate through each post, putting all found tags into `tags`
+    _.each(posts, edge => {
+      if (_.get(edge, "node.frontmatter.tags")) {
+        tags = tags.concat(edge.node.frontmatter.tags)
+      }
+    })
+    // Eliminate duplicate tags
+    tags = _.uniq(tags)
+
+    // Make tag pages
+    tags.forEach(tag => {
+      createPage({
+        path: `/tags/${_.kebabCase(tag)}/`,
+        component: tagTemplate,
+        context: {
+          tag,
         },
       })
     })
