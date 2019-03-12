@@ -1,5 +1,4 @@
 html {
-  font-family: sans-serif;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
@@ -7,6 +6,9 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 article,
 aside,
@@ -200,7 +202,6 @@ html {
 }
 body {
   color: hsla(0, 0%, 0%, 0.8);
-  font-family: georgia, serif;
   font-weight: normal;
   word-wrap: break-word;
   font-kerning: normal;
@@ -619,4 +620,74 @@ pre tt:after {
   html {
     font-size: 100%;
   }
+}
+
+/* Custom */
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  -webkit-transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+  -moz-transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+  transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+}
+
+footer {
+  overflow: hidden;
+  padding: 30px;
+  background: #242526;
+}
+
+footer .social {
+  float: right;
+  padding: 0;
+  margin: 5px 0;
+  overflow: hidden;
+  list-style: none;
+
+  color: #fff;
+}
+
+footer .social li {
+  display: block;
+  float: left;
+  border-left: 1px solid #4b4b4b;
+}
+
+footer .social li:first-child {
+  border: 0;
+}
+
+footer .social a {
+  display: inline-block;
+  margin: 0;
+  padding: 0 17px;
+  font-size: 14px;
+  color: #fff;
+}
+
+footer .copyright {
+  float: left;
+  padding: 12px 0 0 0;
+  border: 0;
+}
+
+footer .copyright {
+  margin: 0 0 10px 0;
+  font-family: "Varela Round","Arial",Sans-Serif;
+  font-size: 13px;
+  line-height: normal;
+  letter-spacing: -0.5px;
+  color: #ced3d8;
+}
+
+footer .copyright a {
+  color: #ced3d8;
+}
+
+footer li {
+  padding: 0;
+  margin: 0;
 }

@@ -4,6 +4,8 @@ import { StaticQuery, Link, graphql } from "gatsby"
 import _ from "lodash"
 import kebabCase from "lodash/kebabCase"
 
+import "./tags.css"
+
 const Tags = () => (
   <StaticQuery
     query={graphql`
@@ -29,10 +31,8 @@ const Tags = () => (
       var sortedTags = _.sortBy(Object.keys(groupedTags), x => groupedTags[x])
       var topTags = _.take(sortedTags, 12)
 
-      return (<div class="tags">
-        <ul>
-          {topTags.map(tag => (<Link to={`/tags/${kebabCase(tag)}/`}><li>{tag}</li></Link>))}
-        </ul>
+      return (<div className="tags">
+        {topTags.map(tag => (<Link key={tag} className="tag" to={`/tags/${kebabCase(tag)}/`}>{tag}</Link>))}
       </div>)
     }} />
 )
