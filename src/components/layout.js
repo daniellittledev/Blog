@@ -4,7 +4,7 @@ import { StaticQuery, graphql } from "gatsby"
 import { Helmet } from "react-helmet"
 
 import Header from "./header"
-import Tags from "./tags"
+import Tags from "./top-tags"
 import "./layout.css"
 
 const Layout = ({ children }) => (

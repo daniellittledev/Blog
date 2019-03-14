@@ -2,7 +2,9 @@ import React from "react"
 import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import "./blog-list-template.css"
-import Tags from "../components/tags";
+
+import PostMetadata from "../components/post-metadata"
+import Tags from "../components/top-tags";
 
 export default class BlogList extends React.Component {
   render() {
@@ -15,10 +17,7 @@ export default class BlogList extends React.Component {
             return (
             <div className="post-preview" key={node.frontmatter.path}>
               <div className="content">
-                <div className="post-metadata">
-                  <div>{ node.frontmatter.tags && node.frontmatter.tags[0] && <span className="tag">{node.frontmatter.tags && node.frontmatter.tags[0]}</span> }</div>
-                  { node.frontmatter.date && <time>{node.frontmatter.date}</time> }
-                </div>
+                <PostMetadata frontmatter={node.frontmatter}/>
                 <h2><a href={node.frontmatter.path}>{title}</a></h2>
                 <p className="excerpt">
                   {node.frontmatter.description || node.excerpt}

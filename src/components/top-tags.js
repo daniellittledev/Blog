@@ -1,12 +1,10 @@
 import React from "react"
-import { StaticQuery, Link, graphql } from "gatsby"
+import { StaticQuery, graphql } from "gatsby"
 
 import _ from "lodash"
-import kebabCase from "lodash/kebabCase"
+import TagList from "./tag-list"
 
-import "./tags.css"
-
-const Tags = () => (
+const TopTags = () => (
   <StaticQuery
     query={graphql`
     query {
@@ -30,10 +28,7 @@ const Tags = () => (
       var groupedTags = _.groupBy(_.flatMap(allTags).filter(x => !!x))
       var sortedTags = _.sortBy(Object.keys(groupedTags), x => groupedTags[x])
       var topTags = _.take(sortedTags, 12)
-
-      return (<div className="tags">
-        {topTags.map(tag => (<Link key={tag} className="tag" to={`/tags/${kebabCase(tag)}/`}>{tag}</Link>))}
-      </div>)
+      return (<TagList tags={topTags}/>)
     }} />
 )
-export default Tags
+export default TopTags

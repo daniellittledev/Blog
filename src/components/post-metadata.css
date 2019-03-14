@@ -1,0 +1,23 @@
+.post-metadata {
+  display: flex;
+  justify-content: space-between;
+}
+  
+.post-metadata .tag {
+  display: inline-block;
+  background: #0085c3;
+  border-radius: 3px;
+  padding: 3px 15px;
+  font-family: "Montserrat","Arial",Sans-Serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.post-metadata time {
+  color: #b5b5b5;
+  font-family: "Montserrat","Arial",Sans-Serif;
+  font-size: 15px;
+  letter-spacing: -1px;
+  padding: 0 8px;
+}
