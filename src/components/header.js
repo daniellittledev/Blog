@@ -16,6 +16,14 @@ const Header = ({ siteTitle }) => (
           {siteTitle}
         </Link>
       </span>
+
+      <nav class="main">
+        <ul class="nav-items">
+          <li class="nav-home"><a href="/">Home</a></li>
+          <li class="nav-about"><a href="/about/">About</a></li>
+        </ul>
+      </nav>
+
     </div>
   </header>
 )

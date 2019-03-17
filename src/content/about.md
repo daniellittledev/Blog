@@ -9,7 +9,7 @@ draft: false
 
 I spend my time investigating and learning principals and patterns like domain driven design, CQRS (Command query responsibility segregation), event sourcing, functional programming and micro services. These tools and more enable me to build robust highly scalable services and applications.
 
-You can find me on twitter at http://twitter.com/lavinski.
+You can find me on twitter at http://twitter.com/daniellittledev.
 
 Other places on the web:
 
