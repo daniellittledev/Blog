@@ -1,8 +1,10 @@
 module.exports = {
   siteMetadata: {
     title: `Daniel Little: Coding Blog`,
-    description: `Life is code`,
+    description: `A blog about .net development and the web. Life is code`,
     author: `Daniel Little`,
+    url: `https://daniellittle.xyz`,
+    twitterHandle: `daniellittledev`
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -35,7 +37,8 @@ module.exports = {
       },
     },
     `gatsby-transformer-remark`,
-
+    `gatsby-plugin-feed`,
+    `gatsby-plugin-sitemap`
     // this (optional) plugin enables Progressive Web App + Offline functionality
     // To learn more, visit: https://gatsby.app/offline
     // 'gatsby-plugin-offline',

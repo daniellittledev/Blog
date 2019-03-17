@@ -3,6 +3,7 @@ import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import PostMetadata from "../components/post-metadata"
 import TagList from "../components/tag-list"
+import Helmet from "react-helmet"
 
 export default function Template({
   data, // this prop will be injected by the GraphQL query below.
@@ -11,6 +12,9 @@ export default function Template({
   const { frontmatter, html } = markdownRemark
   return (
     <Layout>
+      <Helmet>
+        <title>{frontmatter.title}</title>
+      </Helmet>
       <div className="blog-post">
         <div className="content">
           <div className="pre-post">
