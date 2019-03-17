@@ -62,6 +62,8 @@ module.exports = {
                   url: site.siteMetadata.siteUrl + edge.node.frontmatter.path,
                   guid: site.siteMetadata.siteUrl + edge.node.frontmatter.path,
                   custom_elements: [{ "content:encoded": edge.node.html }],
+                  changefreq: `weekly`,
+                  priority: 0.8,
                 })
               })
             },
@@ -86,7 +88,7 @@ module.exports = {
                 }
               }
             `,
-            output: "/rss",
+            output: "/rss/index.xml",
             title: "Daniel Little: Coding Blog",
           },
         ],
