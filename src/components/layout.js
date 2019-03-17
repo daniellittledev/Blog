@@ -27,12 +27,12 @@ const Layout = ({ children }) => (
           <meta property="og:type" content="website"/>
           <meta property="og:title" content={data.site.siteMetadata.title}/>
           <meta property="og:description" content={data.site.siteMetadata.description}/>
-          <meta property="og:url" content={data.site.siteMetadata.url}/>
+          <meta property="og:url" content={data.site.siteMetadata.siteUrl}/>
 
           <meta name="twitter:card" content="summary"/>
           <meta name="twitter:title" content={data.site.siteMetadata.title}/>
           <meta name="twitter:description" content={data.site.siteMetadata.description}/>
-          <meta name="twitter:url" content={data.site.siteMetadata.url}/>
+          <meta name="twitter:url" content={data.site.siteMetadata.siteUrl}/>
           <meta name="twitter:site" content={ "@" + data.site.siteMetadata.twitterHandle }/>
 
           <link href="https://fonts.googleapis.com/css?family=Noto+Serif:400,700|Montserrat|Varela+Round|Oxygen" rel="stylesheet"/>
@@ -52,7 +52,7 @@ const Layout = ({ children }) => (
               <li><a href="https://twitter.com/daniellittledev" target="_blank" className="twitter" title="Twitter" rel="noopener noreferrer"><i className="fab fa-twitter"></i></a></li>
               <li><a href="https://github.com/lavinski" target="_blank" className="github" title="GitHub" rel="noopener noreferrer"><i className="fab fa-github"></i></a></li>
               <li><a href="https://stackoverflow.com/users/200442/daniel-little" target="_blank" className="stackoverflow" title="StackOverflow" rel="noopener noreferrer"><i className="fab fa-stack-overflow"></i></a></li>
-              <li><a href={data.site.siteMetadata.url + "/rss"} target="_blank" className="rss" title="RSS"><i className="fas fa-rss"></i></a></li>
+              <li><a href={data.site.siteMetadata.siteUrl + "/rss"} target="_blank" className="rss" title="RSS"><i className="fas fa-rss"></i></a></li>
             </ul>
           </footer>
         </div>
