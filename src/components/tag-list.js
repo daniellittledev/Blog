@@ -7,7 +7,7 @@ const TagList = (props) => {
     const tags = props.tags
     return (
     <div className="tags">
-        {tags.map(tag => (<Link key={tag} className="tag" to={`/tags/${kebabCase(tag)}/`}>{tag}</Link>))}
+        {(tags || []).map(tag => (<Link key={tag} className="tag" to={`/tags/${kebabCase(tag)}/`}>{tag}</Link>))}
     </div>
     )
 }
