@@ -51,7 +51,7 @@ const Layout = ({ children }) => (
             <li><a href="https://twitter.com/daniellittledev" target="_blank" className="twitter" title="Twitter" rel="noopener noreferrer"><i className="fab fa-twitter"></i></a></li>
             <li><a href="https://github.com/lavinski" target="_blank" className="github" title="GitHub" rel="noopener noreferrer"><i className="fab fa-github"></i></a></li>
             <li><a href="https://stackoverflow.com/users/200442/daniel-little" target="_blank" className="stackoverflow" title="StackOverflow" rel="noopener noreferrer"><i className="fab fa-stack-overflow"></i></a></li>
-            <li><a href={data.site.siteMetadata.siteUrl + "/rss"} target="_blank" className="rss" title="RSS"><i className="fas fa-rss"></i></a></li>
+            <li><a href="/rss" target="_blank" className="rss" title="RSS"><i className="fas fa-rss"></i></a></li>
           </ul>
         </footer>
       </div>
