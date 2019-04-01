@@ -17,10 +17,10 @@ const Header = ({ siteTitle }) => (
         </Link>
       </span>
 
-      <nav class="main">
-        <ul class="nav-items">
-          <li class="nav-home"><a href="/">Home</a></li>
-          <li class="nav-about"><a href="/about/">About</a></li>
+      <nav className="main">
+        <ul className="nav-items">
+          <li className="nav-home"><a href="/">Home</a></li>
+          <li className="nav-about"><a href="/about/">About</a></li>
         </ul>
       </nav>
 

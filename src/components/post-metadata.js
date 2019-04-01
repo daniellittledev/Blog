@@ -6,7 +6,7 @@ const PostMetadata = (props) => {
     return (
     <div className="post-metadata">
         <div>{ frontmatter.tags && frontmatter.tags[0] && <span className="tag">{frontmatter.tags && frontmatter.tags[0]}</span> }</div>
-        { frontmatter.date && <time>{frontmatter.date}</time> }
+        { frontmatter.dateCreated && <time>{frontmatter.dateCreated}</time> }
     </div>
     )
 }
