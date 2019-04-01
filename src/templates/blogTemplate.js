@@ -8,11 +8,12 @@ import { strictEqual } from "assert";
 import { string } from "prop-types";
 
 function first(values) {
+  values = (values || [])
   return values.length > 0 ? values[0] : ""
 }
 
 function csv(values) {
-  return values.join(', ')
+  return (values || []).join(', ')
 }
 
 export default function Template({
