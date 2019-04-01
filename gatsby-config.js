@@ -88,7 +88,7 @@ module.exports = {
                 }
               }
             `,
-            output: "/rss/index.xml",
+            output: "/rss.xml",
             title: "Daniel Little: Coding Blog",
           },
         ],
