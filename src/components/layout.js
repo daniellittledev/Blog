@@ -22,7 +22,7 @@ const Layout = ({ children }) => (
       }
     `}
     render={data => (
-      <div className="layout">
+      <div className="layout i1 i2">
         <Helmet>
           <meta name="description" content={data.site.siteMetadata.description}/>
 

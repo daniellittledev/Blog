@@ -743,8 +743,8 @@ h1, h2, h3, h4, h5, .author {
 
 /* Tablet */
 @media screen and (max-width: 900px) {
-  .content {
-    width: 600px;
+  .i1 .content {
+    width: 600px; 
   }
 }
 
@@ -753,9 +753,18 @@ h1, h2, h3, h4, h5, .author {
   body {
     min-width: 480px;
   }
-  .content {
+  .i1.i2 .content {
     width: 430px;
   }
+
+  /*
+  body {
+    min-width: 300px;
+  }
+  .i1.i2 .content {
+    width: 90vm;
+  }
+  */
 
   header nav {
     float: none;
