@@ -1,0 +1,146 @@
+.layout {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr auto;
+  align-content: stretch;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  -webkit-transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+  -moz-transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+  transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
+}
+
+footer {
+  overflow: hidden;
+  padding: 30px;
+  background: #242526;
+}
+
+footer .social {
+  float: right;
+  padding: 0;
+  margin: 5px 0;
+  overflow: hidden;
+  list-style: none;
+
+  color: #fff;
+}
+
+footer .social li {
+  display: block;
+  float: left;
+  border-left: 1px solid #4b4b4b;
+}
+
+footer .social li:first-child {
+  border: 0;
+}
+
+footer .social a {
+  display: inline-block;
+  margin: 0;
+  padding: 0 17px;
+  font-size: 14px;
+  color: #fff;
+}
+
+footer .copyright {
+  float: left;
+  padding: 12px 0 0 0;
+  border: 0;
+}
+
+footer .copyright {
+  margin: 0 0 10px 0;
+  font-family: "Varela Round","Arial",Sans-Serif;
+  font-size: 13px;
+  line-height: normal;
+  letter-spacing: -0.5px;
+  color: #ced3d8;
+}
+
+footer .copyright a {
+  color: #ced3d8;
+}
+
+footer li {
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, .author {
+  font-family: "Varela Round","Arial",Sans-Serif;
+}
+
+.content {
+  margin: auto;
+  width: 900px;
+  padding: 10px;
+}
+
+.pre-post {
+  margin: 20px 0;
+}
+
+.author > * {
+  margin: 40px 0 30px;
+}
+
+.spacer {
+  padding: 30px 0;
+}
+
+.hr {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 70%;
+  margin: 0 auto;
+  background: #dfdfdf;
+}
+
+.post-post {
+  background: #f9f9f9;
+  border-top: 1px solid #f3f3f3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Tablet */
+@media screen and (max-width: 900px) {
+  .i1 .content {
+    width: 600px;
+  }
+}
+
+/* Phone */
+@media screen and (max-width: 480px) {
+  body {
+    min-width: 480px;
+  }
+  .i1.i2 .content {
+    width: 430px;
+  }
+
+  /*
+  body {
+    min-width: 300px;
+  }
+  .i1.i2 .content {
+    width: 90vm;
+  }
+  */
+
+  header nav {
+    float: none;
+  }
+}
