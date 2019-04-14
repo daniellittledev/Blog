@@ -17,9 +17,16 @@ a {
   transition: color 0.15s ease-in,background 0.15s ease-in,border-color 0.15s ease-in;
 }
 
+a, a:link, a:hover, a:visited, a:active {
+  color: #0ca5a5;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 footer {
-  overflow: hidden;
-  padding: 30px;
+  padding: 10px 30px;
   background: #242526;
 }
 
@@ -82,11 +89,11 @@ h1, h2, h3, h4, h5, .author {
 .content {
   margin: auto;
   width: 900px;
-  padding: 10px;
+  padding: 10px 0;
 }
 
 .pre-post {
-  margin: 20px 0;
+  margin: 60px 0;
 }
 
 .author > * {
@@ -115,31 +122,64 @@ h1, h2, h3, h4, h5, .author {
   box-sizing: border-box;
 }
 
+article {
+  margin-top: 40px;
+}
+
+article p {
+  margin: 45px 0;
+  padding: 0;
+  font-family: "Noto Serif","Times New Roman",Serif;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 35px;
+  color: rgba(35,37,40,0.7);
+}
+
+blockquote {
+  padding: 10px 0 10px 5%;
+  margin: 40px 0;
+  color: #38393c;
+  font-family: "Montserrat","Arial",Sans-Serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  text-align: left;
+  border-left: 6px solid #e8eaed;
+  letter-spacing: -0.5px;
+}
+
+article blockquote p {
+  margin: 0;
+}
+
+article :not(pre) > code[class*="language-"],
+article pre[class*="language-"] {
+  background: none;
+}
+
+.gatsby-highlight {
+  background-color: #f8f8f8;
+}
+
 /* Tablet */
 @media screen and (max-width: 900px) {
-  .i1 .content {
-    width: 600px;
+  .content {
+    width: 90%;
+  }
+  header .title {
+    font-size: 2rem;
   }
 }
 
 /* Phone */
 @media screen and (max-width: 480px) {
   body {
-    min-width: 480px;
+    min-width: 400px;
   }
-  .i1.i2 .content {
-    width: 430px;
+  header .title {
+    font-size: 1.5rem;
   }
-
-  /*
-  body {
-    min-width: 300px;
-  }
-  .i1.i2 .content {
-    width: 90vm;
-  }
-  */
-
   header nav {
     float: none;
   }

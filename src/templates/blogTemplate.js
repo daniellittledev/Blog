@@ -4,8 +4,7 @@ import Layout from "../components/layout"
 import PostMetadata from "../components/post-metadata"
 import TagList from "../components/tag-list"
 import Helmet from "react-helmet"
-import { strictEqual } from "assert";
-import { string } from "prop-types";
+import "prismjs/themes/prism-solarizedlight.css"
 
 function first(values) {
   values = (values || [])
@@ -62,7 +61,7 @@ export default function Template({
         <div className="post-post">
           <div className="content">
             <div className="author">
-              <div>{frontmatter.author}</div>
+              <div>Written by {frontmatter.author}</div>
             </div>
           </div>
         </div>

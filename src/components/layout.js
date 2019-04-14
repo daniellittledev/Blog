@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet"
 import Header from "./header"
 import Tags from "./top-tags"
 import "./layout.css"
+import "./layout-custom.css"
 
 const Layout = ({ children }) => (
   <StaticQuery

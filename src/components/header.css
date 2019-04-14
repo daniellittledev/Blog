@@ -1,6 +1,6 @@
 header {
   background: #fff;
-  padding: 22px 25px 15px;
+  padding: 22px 0 15px;
   border-bottom: 2px solid #f2f2f2;
 }
 
@@ -10,9 +10,8 @@ header .title {
   font-weight: bold;
 }
 
-header a {
+header a, header a:link, header a:hover, header a:visited, header a:active {
   font-family: "Oxygen","Arial",Sans-Serif;
-  font-size: 28px;
   color: #2c2c2c
 }
 
