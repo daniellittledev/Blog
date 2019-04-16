@@ -50,6 +50,18 @@ module.exports = {
               noInlineHighlight: false
             },
           },
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 900
+            }
+          },
+          {
+            resolve: `gatsby-remark-copy-linked-files`,
+            options: {
+              destinationDir: `assets`,
+            }
+          },
         ],
       },
     },
