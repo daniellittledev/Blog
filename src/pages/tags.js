@@ -20,17 +20,19 @@ const TagsPage = ({
 }) => (
   <Layout>
     <Helmet title={title} />
-    <div>
-      <h1>Tags</h1>
-      <ul>
-        {_.sortBy(group, x => x.totalCount).reverse().map(tag => (
-          <li key={tag.fieldValue}>
-            <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
-              {tag.fieldValue} ({tag.totalCount})
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <div className="page">
+      <div className="content">
+        <h1>Tags</h1>
+        <ul>
+          {_.sortBy(group, x => x.totalCount).reverse().map(tag => (
+            <li key={tag.fieldValue}>
+              <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
+                {tag.fieldValue} ({tag.totalCount})
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </Layout>
 )
