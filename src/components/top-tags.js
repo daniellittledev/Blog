@@ -28,7 +28,12 @@ const TopTags = () => (
       var groupedTags = _.groupBy(_.flatMap(allTags).filter(x => !!x))
       var sortedTags = _.sortBy(Object.keys(groupedTags), x => groupedTags[x])
       var topTags = _.take(sortedTags, 12)
-      return (<TagList tags={topTags}/>)
+      return (
+        <div class="top-tags">
+          <h4>Top Tags</h4>
+          <TagList tags={topTags}/>
+        </div>
+      )
     }} />
 )
 export default TopTags

@@ -29,6 +29,7 @@ export default class BlogList extends React.Component {
             <div className="content">
               {(this.props.pageContext.next) ? <a className="next" href={this.props.pageContext.next}>Older Posts</a> : null}
               {(this.props.pageContext.prev) ? <a className="previous" href={this.props.pageContext.prev}>Newer Posts</a> : null}
+              <div className="clear"/>
             </div>
           </div>
         </div>

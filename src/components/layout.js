@@ -7,6 +7,7 @@ import Header from "./header"
 import Tags from "./top-tags"
 import "./layout.css"
 import "./layout-custom.css"
+import TopTags from "./top-tags";
 
 const Layout = ({ children }) => (
   <StaticQuery
@@ -45,6 +46,9 @@ const Layout = ({ children }) => (
         <Header siteTitle={data.site.siteMetadata.title} />
         <main>
           {children}
+          <div className="content">
+            <TopTags/>
+          </div>
         </main>
         <footer>
           <p className="copyright">

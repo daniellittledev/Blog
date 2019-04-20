@@ -96,8 +96,16 @@ h1, h2, h3, h4, h5, .author {
   margin: 60px 0;
 }
 
-.author > * {
-  margin: 40px 0 30px;
+.author {
+  margin: 20px 0;
+}
+
+.author-name {
+  margin-left: 10px;
+}
+
+.profile {
+  vertical-align: middle;
 }
 
 .spacer {
@@ -160,6 +168,22 @@ article pre[class*="language-"] {
 
 .gatsby-highlight {
   background-color: #f8f8f8;
+}
+
+.top-tags {
+  padding: 20px 0;
+}
+
+.clear {
+  clear: both;
+}
+
+.profile {
+  border-radius: 100px;
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  margin: 0;
 }
 
 /* Tablet */

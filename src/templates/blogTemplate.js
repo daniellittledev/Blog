@@ -5,6 +5,7 @@ import PostMetadata from "../components/post-metadata"
 import TagList from "../components/tag-list"
 import Helmet from "react-helmet"
 import "prismjs/themes/prism-solarizedlight.css"
+import Img from "gatsby-image"
 
 function first(values) {
   values = (values || [])
@@ -61,7 +62,8 @@ export default function Template({
         <div className="post-post">
           <div className="content">
             <div className="author">
-              <div>Written by {frontmatter.author}</div>
+              <img class="profile" src="/daniel.little.jpg" alt="Daniel Little"/>
+              <span class="author-name">Written by {frontmatter.author}</span>
             </div>
           </div>
         </div>
