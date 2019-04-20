@@ -15,11 +15,11 @@ Getting started to React and want to get right to it? These are the links you're
 
 ### What you need!
 
-First up you’ll need Node: http://nodejs.org.au/
+First up you’ll need Node: https://nodejs.org.au/
 
 You can get the React tooling here: https://github.com/facebookincubator/create-react-app
 
-Once you have React you’ll want Redux: https://github.com/reactjs/react-redux 
+Once you have React you’ll want Redux: https://github.com/reactjs/react-redux
 
 That’s all you need to get started!
 
@@ -32,14 +32,14 @@ Redux Developer Tools, amazing for debugging state and time travel debugging: [h
 
 ### Extra Resources
 
-The how and why of React apps: https://css-tricks.com/learning-react-redux/ 
+The how and why of React apps: https://css-tricks.com/learning-react-redux/
 
-A random super simple example Redux app: https://github.com/tstringer/create-react-app-with-redux 
+A random super simple example Redux app: https://github.com/tstringer/create-react-app-with-redux
 
 
 ### Extra packages for better redux apps
 
-If you need to make ajax calls this is the best was to do it: https://github.com/yelouafi/redux-saga 
+If you need to make ajax calls this is the best was to do it: https://github.com/yelouafi/redux-saga
 
 For caching updates to speed things up: https://github.com/reactjs/reselect
 

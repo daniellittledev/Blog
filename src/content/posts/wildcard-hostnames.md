@@ -12,11 +12,11 @@ title: "Wildcards hostname in your hosts file"
 
 If you've ever wanted to setup a wildcard entry in your hosts file so you don't have to add an entry for every IIS binding you'll be happy to know there is a way.
 
-The trick however is not to use the hosts file but a local DNS proxy instead. [Acrylic DNS](http://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome) is a free and open source which you can download [here](http://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome). You use it in much the same way you would use a hosts file.
+The trick however is not to use the hosts file but a local DNS proxy instead. [Acrylic DNS](https://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome) is a free and open source which you can download [here](https://mayakron.altervista.org/wikibase/show.php?id=AcrylicHome). You use it in much the same way you would use a hosts file.
 
 Stackoverflow has a great answer detailing how to set it up:
 
-### [Configuring Acrylic DNS Proxy](http://stackoverflow.com/posts/9695861/edit) ###
+### [Configuring Acrylic DNS Proxy](https://stackoverflow.com/posts/9695861/edit) ###
 
 **To configure Acrylic DNS Proxy, install it from the above link then go to:**
 
@@ -42,9 +42,9 @@ Stackoverflow has a great answer detailing how to set it up:
 **You will also need to adjust your DNS setting in you network interface settings:**
 
 1. Start
-1. Control Panel 
-1. Network and Internet 
-1. Network Connections 
+1. Control Panel
+1. Network and Internet
+1. Network Connections
 1. Local Area Connection Properties
 1. TCP/IPv4
 

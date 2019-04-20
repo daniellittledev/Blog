@@ -8,7 +8,7 @@ title: "Entity Framework and Foreign key constraint may cause cycles or multiple
 
 ---
 
-Today I ran into the `Foreign key constraint may cause cycles or multiple cascade paths` issue for the first time. The first thing to note is the error isn't actually from Entity Framework it's from [SQL Server](http://stackoverflow.com/questions/851625/foreign-key-constraint-may-cause-cycles-or-multiple-cascade-paths).
+Today I ran into the `Foreign key constraint may cause cycles or multiple cascade paths` issue for the first time. The first thing to note is the error isn't actually from Entity Framework it's from [SQL Server](https://stackoverflow.com/questions/851625/foreign-key-constraint-may-cause-cycles-or-multiple-cascade-paths).
 
     Introducing FOREIGN KEY constraint 'ConstraintName' on table 'TableName' may cause cycles or multiple cascade paths. Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
 
@@ -20,9 +20,9 @@ I was however using EF5 Code First so I fist needed to figure out why my model w
 
 As you can see there are two relationships to the Projects table, which is usually fine. The issue comes from the fact that EF using the `OneToManyCascadeDeleteConvention` convention my default. Which was not what I wanted for these two relationships.
 
-My EF model takes the convention and attribute approach, I try to avoid the fluent API to keep everything in the one place. However there is currently no attribute to turn off cascade delete. 
+My EF model takes the convention and attribute approach, I try to avoid the fluent API to keep everything in the one place. However there is currently no attribute to turn off cascade delete.
 
-Here is how to do it using the fluent API:  
+Here is how to do it using the fluent API:
 
 	internal sealed class SchemaConfiguration : EntityTypeConfiguration<Schema>
 	{
@@ -44,4 +44,4 @@ Here is how to do it using the fluent API:
 		modelBuilder.Configurations.Add(new NodeConfiguration());
 	}
 
-[Need more help](http://stackoverflow.com/questions/5532810/entity-framework-code-first-defining-relationships-keys)
+[Need more help](https://stackoverflow.com/questions/5532810/entity-framework-code-first-defining-relationships-keys)

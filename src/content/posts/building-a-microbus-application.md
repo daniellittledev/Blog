@@ -74,7 +74,7 @@ In this case, the built-in BusBuilder is used to create a bus without any IOC co
 
 Messages and Handlers are the bread and butter of MicroBus, but the real power comes from the Pipeline. The pipeline consists not only of just the end handler but lets you place any number of intermediary pipeline handlers between receiving the message and handling it.
 
-![Pipeline Handlers](/content/images/building-a-microbus-application/MicroBus_PipelineHandlers.png)
+![Pipeline Handlers](../../images/building-a-microbus-application/MicroBus_PipelineHandlers.png)
 
 Pipeline handlers let you intercept messages as they are passed through to the message handlers, and then the responses as they bubble back up through the pipeline. This makes pipeline handlers the ideal place to handle all the cross-cutting concerns in an application. Such as logging, security, unit-of-work/transactions to name a few.
 
@@ -120,7 +120,7 @@ So far we've seen MicroBus handling messages and handling cross-cutting concerns
 
 Decoupling the application from these frameworks also has the added benefit of being able to use the same code for multiple different entry points. For example, you have a web app that can also consume messages from a service bus. Because all the cross cutting concerns are handling by MicroBus, it becomes trivial to support.
 
-![Multiple invokers](/content/images/building-a-microbus-application/MicroBus_Invokers.png)
+![Multiple invokers](/../../images/building-a-microbus-application/MicroBus_Invokers.png)
 
 Entry points can also include Tests making Integration and Unit testing much easier. Part of the reason for this is each feature already maps to one command and handler pair. Integration tests can simply use the bus as is with the existing pipeline, and Unit Tests can focus on handlers as a unit.
 
@@ -128,7 +128,7 @@ Entry points can also include Tests making Integration and Unit testing much eas
 
 Lastly, I wanted to touch a little bit on Object Lifecycles in MicroBus. For a Bus setup using Autofac, most components will be registered as instance per lifetime scope except the bus itself. The bus is registered as transient and will create a new lifetime scope for each message. So even without using Autofac in WebAPI, each request would get a new instance of the bus and the pipeline.
 
-![MicroBus Pipeline Lifecycle](/content/images/building-a-microbus-application/MicroBus_Pipeline.png)
+![MicroBus Pipeline Lifecycle](/../../images/building-a-microbus-application/MicroBus_Pipeline.png)
 
 Things get a little more complicated when handlers themselves send messages. In that case, no new scope is created so lifetime scope registrations can be shared across nested pipelines as well. It's also possible to override when MicroBus creates new scopes by implementing the `IDependencyScope` and `IDependencyResolver` interfaces.
 

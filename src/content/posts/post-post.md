@@ -26,6 +26,6 @@ While might still be possible to get it working without IIS by replacing the `Bu
 
 I think I'll just wait for some official OWIN support and see how [Cassette][2] goes in the meantime.
 
-[1]: https://github.com/NancyFx/Nancy/wiki/How-to-use-System.Web.Optimization-Bundling-with-Nancy 
+[1]: https://github.com/NancyFx/Nancy/wiki/How-to-use-System.Web.Optimization-Bundling-with-Nancy
 
-[2]: http://getcassette.net/
+[2]: https://getcassette.net/

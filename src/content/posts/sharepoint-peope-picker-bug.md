@@ -18,4 +18,4 @@ The html looks like this.
 
 The issue seems to be I’m using IE 9 Standards mode, as SharePoint usualy runs in quirks mode.
 
-Similar issues: http://blog.richfinn.net/blog/CommentView,guid,4fce2e56-8e53-48cb-b6d9-6249af8e2141.aspx
+Similar issues: https://blog.richfinn.net/blog/CommentView,guid,4fce2e56-8e53-48cb-b6d9-6249af8e2141.aspx

@@ -10,4 +10,4 @@ title: "Event Handlers (Avoid static)"
 
 ---
 
-http://lostechies.com/jimmybogard/2014/05/13/a-better-domain-events-pattern/
+https://lostechies.com/jimmybogard/2014/05/13/a-better-domain-events-pattern/

@@ -10,13 +10,13 @@ title: "Implementing Domain Driven Design"
 
 ---
 
-I've talked about [what Domain Driven Design is](http://lavinski.me/domain-driven-design/) and what kind of benefits you can expect from it. 
+I've talked about [what Domain Driven Design is](https://lavinski.me/domain-driven-design/) and what kind of benefits you can expect from it.
 
-The next concept to explore is what the implementation looks like. I'll be focusing on the architecture of such a system more than how to model a domain, which [Eric Evans covers in his book](http://dddcommunity.org/book/evans_2003/).
+The next concept to explore is what the implementation looks like. I'll be focusing on the architecture of such a system more than how to model a domain, which [Eric Evans covers in his book](https://dddcommunity.org/book/evans_2003/).
 
 The domain in DDD contains all the business logic in the application. Its equivalent in a layered system would be the domain/business layer. A typical domain implementation can be said to look like this:
 
-![Domain Driven Design Concepts Diagram](/content/images/2014/Apr/Domain-Driven-Design-Concepts.png)
+![Domain Driven Design Concepts Diagram](/../../images/implementing-domain-driven-design/Domain-Driven-Design-Concepts.png)
 
 In Domain Driven Design there are three main types of objects the `Aggregate Root`, `Entities` and `Value Objects`. These are objects in the typical object orientated sense and represent a concept from the domain/business. The other two concepts show are `Aggregates` and `Bounded Context`, which relate to the logical grouping of these domain objects.
 
@@ -24,7 +24,7 @@ In Domain Driven Design there are three main types of objects the `Aggregate Roo
 
 `Entities` are a model of an object or concept in the domain and always have a distinct Id, usually a `Guid`. An `Entity` could be anything from such as a user, a product, or any other object. The `Aggregate Root` shown is actually also an entity but it sits at the root of the hierarchy and has no direct references to it.
 
-`Entities` are a model of the business, but what does an `Entity` actually look like? They are objects like, Product, Customer and Order which contain the behaviours (methods) of domain objects they are modeled after. These behaviours are owned by the `Entities`, not stowed away in a manager or service. This also means that `Entities` don't need to expose all those properties that services or managers would otherwise need. Instead, the state is encapsulated inside the object. `Entities` are not `Data Transfer Objects` and they should have very few, if any, properties. It also makes the behaviours discoverable, more expressive and more consistent as they are all local members of objects. 
+`Entities` are a model of the business, but what does an `Entity` actually look like? They are objects like, Product, Customer and Order which contain the behaviours (methods) of domain objects they are modeled after. These behaviours are owned by the `Entities`, not stowed away in a manager or service. This also means that `Entities` don't need to expose all those properties that services or managers would otherwise need. Instead, the state is encapsulated inside the object. `Entities` are not `Data Transfer Objects` and they should have very few, if any, properties. It also makes the behaviours discoverable, more expressive and more consistent as they are all local members of objects.
 
 Take the following two lines for example:
 ```
@@ -55,7 +55,7 @@ Now that I've explained `Entities` and `Values` I'll move up to `Aggregates` and
 
 An `Aggregate` is a boundary around one or more Entities. This boundary is also a transactional boundary. Such that all `Entities` in one `Aggregate` cannot directly reference `Entities` in another. An `Aggregate` would represent a single unit, for example a Tree. The aggregate is composed of the tree or trunk (the `Aggregate Root`) and leaves (the other `Entities`). `Aggregates` are also the basic element of data storage, much like in a document database. You only save or load whole  `Aggregates`.
 
-I mentioned earlier that you cannot directly reference `Entities` in another `Aggregate`. Any references from outside the aggregate should only go to the aggregate root, as you cannot cross the `Aggregate` boundary. Unlike references inside an `Aggregate` that link directly to an instance. References to another `Aggregate Root` will only use its identifier. This would also apply to circular references to the `Aggregates` own `Aggregate Root`. 
+I mentioned earlier that you cannot directly reference `Entities` in another `Aggregate`. Any references from outside the aggregate should only go to the aggregate root, as you cannot cross the `Aggregate` boundary. Unlike references inside an `Aggregate` that link directly to an instance. References to another `Aggregate Root` will only use its identifier. This would also apply to circular references to the `Aggregates` own `Aggregate Root`.
 
 ###Contexts
 
@@ -67,11 +67,11 @@ Modeling one concept as multiple `Entities` is more common in larger domain wher
 
 There are three other concepts I didn't fully cover here; Repositories, Domain Events and Services.
 
-Repositories are a very simple concept and simply load or save `Aggregates`. 
+Repositories are a very simple concept and simply load or save `Aggregates`.
 
-I did briefly mention Domain Events; the basic premise here is that instead of an ORM implicitly tracking changes `Events` are used to describe what changes happened. 
+I did briefly mention Domain Events; the basic premise here is that instead of an ORM implicitly tracking changes `Events` are used to describe what changes happened.
 
-The concept of [services](http://stackoverflow.com/questions/2268699/domain-driven-design-domain-service-application-service) which could be application, domain or infrastructure services.
+The concept of [services](https://stackoverflow.com/questions/2268699/domain-driven-design-domain-service-application-service) which could be application, domain or infrastructure services.
 
 ###In Conculsion
 

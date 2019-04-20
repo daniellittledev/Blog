@@ -12,7 +12,7 @@ These are the default generated Web.Config files from Visual Studio 2013 Update 
 
 - <a href="#Framework451">Web.Config for .NET Framework 4.5.1</a>
 - <a href="#Framework35">Web.Config for .NET Framework 3.5</a>
-	 
+
 Other variations are all quite similar but if you think I'm missing one that's useful leave a comment.
 
 <a name="Framework451">**Web.Config for .NET Framework 4.5.1**</a>
@@ -20,11 +20,11 @@ Other variations are all quite similar but if you think I'm missing one that's u
 	<?xml version="1.0" encoding="utf-8"?>
 	<!--
 	  For more information on how to configure your ASP.NET application, please visit
-	  http://go.microsoft.com/fwlink/?LinkId=301880
+	  https://go.microsoft.com/fwlink/?LinkId=301880
 	  -->
 	<configuration>
 	  <configSections>
-	    <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 -->
+	    <!-- For more information on Entity Framework configuration, visit https://go.microsoft.com/fwlink/?LinkID=237468 -->
 	    <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
 	  </configSections>
 	  <connectionStrings>
@@ -87,7 +87,7 @@ Other variations are all quite similar but if you think I'm missing one that's u
 
 	<?xml version="1.0"?>
 	<configuration>
-	
+
 	    <configSections>
 	      <sectionGroup name="system.web.extensions" type="System.Web.Configuration.SystemWebExtensionsSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
 	        <sectionGroup name="scripting" type="System.Web.Configuration.ScriptingSectionGroup, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
@@ -100,47 +100,47 @@ Other variations are all quite similar but if you think I'm missing one that's u
 	          </sectionGroup>
 	        </sectionGroup>
 	      </sectionGroup>
-	    </configSections>  
-	
+	    </configSections>
+
 	    <appSettings />
 	    <connectionStrings />
 	    <system.web>
 	        <compilation debug="true">
-	
+
 	          <assemblies>
 	            <add assembly="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
 	            <add assembly="System.Data.DataSetExtensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
 	            <add assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 	            <add assembly="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089"/>
 	          </assemblies>
-	
+
 	        </compilation>
 	        <!--
-	            The <authentication> section enables configuration 
-	            of the security authentication mode used by 
-	            ASP.NET to identify an incoming user. 
+	            The <authentication> section enables configuration
+	            of the security authentication mode used by
+	            ASP.NET to identify an incoming user.
 	        -->
 	        <authentication mode="Windows" />
 	        <!--
-	            The <customErrors> section enables configuration 
-	            of what to do if/when an unhandled error occurs 
-	            during the execution of a request. Specifically, 
-	            it enables developers to configure html error pages 
+	            The <customErrors> section enables configuration
+	            of what to do if/when an unhandled error occurs
+	            during the execution of a request. Specifically,
+	            it enables developers to configure html error pages
 	            to be displayed in place of a error stack trace.
-	
+
 	        <customErrors mode="RemoteOnly" defaultRedirect="GenericErrorPage.htm">
 	            <error statusCode="403" redirect="NoAccess.htm" />
 	            <error statusCode="404" redirect="FileNotFound.htm" />
 	        </customErrors>
 	        -->
-	
+
 	      <pages>
 	        <controls>
 	          <add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 	          <add tagPrefix="asp" namespace="System.Web.UI.WebControls" assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 	        </controls>
 	      </pages>
-	
+
 	      <httpHandlers>
 	        <remove verb="*" path="*.asmx"/>
 	        <add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
@@ -150,9 +150,9 @@ Other variations are all quite similar but if you think I'm missing one that's u
 	      <httpModules>
 	        <add name="ScriptModule" type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"/>
 	      </httpModules>
-	
+
 	    </system.web>
-	
+
 	    <system.codedom>
 	      <compilers>
 	        <compiler language="c#;cs;csharp" extension=".cs" warningLevel="4"
@@ -162,8 +162,8 @@ Other variations are all quite similar but if you think I'm missing one that's u
 	        </compiler>
 	     </compilers>
 	    </system.codedom>
-	    
-	    <!-- 
+
+	    <!--
 	        The system.webServer section is required for running ASP.NET AJAX under Internet
 	        Information Services 7.0.  It is not necessary for previous version of IIS.
 	    -->
@@ -197,5 +197,5 @@ Other variations are all quite similar but if you think I'm missing one that's u
 	        </dependentAssembly>
 	      </assemblyBinding>
 	    </runtime>
-	
+
 	</configuration>

@@ -13,7 +13,7 @@ I just had a very interesting experience with AOP in C#. I have a function with 
 So the code looks a little bit like this:
 
     List<Update> updates = Manager.ValidateAndCreate();
-    
+
     // protected void Save(List<Update> updates) { ....
     Save(updates);
 
@@ -22,7 +22,7 @@ The Method Interceptor looks like the following
     public class ExceptionAdvice : AopAlliance.Intercept.IMethodInterceptor {
 
         public object Invoke(AopAlliance.Intercept.IMethodInvocation invocation) {
-            
+
             if (isValid(invocation)) {
                 return invocation.Proceed();
             } else {
@@ -33,11 +33,11 @@ The Method Interceptor looks like the following
         private bool isValid( ...
      }
 
-Now after validation fails the value of updates is actually a boolean not a List<Update>, I thought there would be some kind of runtime error here but there was not, so: 
- 
+Now after validation fails the value of updates is actually a boolean not a List<Update>, I thought there would be some kind of runtime error here but there was not, so:
+
     updates.GetType().Name == "Boolean"
 
-But:  
+But:
 
     updates is bool == false
 
@@ -45,4 +45,4 @@ So save will still accept its mutated list of updates and will complain later on
 
 So how is this possible in a type safe language like C#? btw it's spring-aop.
 
-[Link to the StackOverflow question](http://stackoverflow.com/questions/7200572/c-and-aop-aspect-oriented-programming-how-does-this-work)
+[Link to the StackOverflow question](https://stackoverflow.com/questions/7200572/c-and-aop-aspect-oriented-programming-how-does-this-work)

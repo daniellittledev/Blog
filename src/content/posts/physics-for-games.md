@@ -16,7 +16,7 @@ The system I'll be focusing on is Rigid Body Dynamics so lets start with the bas
 
 Any input into the system should be in the form of an impulse, which is basically a force against a point on a body. If all the impulses act against the center off mass we can deal with it just like a simple force.
 
-The formula for a force: 
+The formula for a force:
 
     force = mass x acceleration
 
@@ -40,9 +40,9 @@ Position formula:
 
     position = velocity x Δtime
 
-Now we can do all the way from the initial push to there the body ends up after a known change in time. The same also applies to angular forces and motion but that's something I'll get to later. To be honest I'm still trying to wrap my head around [inertia tensors](http://en.wikipedia.org/wiki/Inertia_tensor) which you need to 
+Now we can do all the way from the initial push to there the body ends up after a known change in time. The same also applies to angular forces and motion but that's something I'll get to later. To be honest I'm still trying to wrap my head around [inertia tensors](https://en.wikipedia.org/wiki/Inertia_tensor) which you need to
 
 Helpful links
-[Dynamical simulation](http://en.wikipedia.org/wiki/Dynamical_simulation)
+[Dynamical simulation](https://en.wikipedia.org/wiki/Dynamical_simulation)
 
 
