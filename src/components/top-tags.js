@@ -29,7 +29,7 @@ const TopTags = () => (
       var sortedTags = _.sortBy(Object.keys(groupedTags), x => groupedTags[x])
       var topTags = _.take(sortedTags, 12)
       return (
-        <div class="top-tags">
+        <div className="top-tags">
           <h4>Top Tags</h4>
           <TagList tags={topTags}/>
         </div>

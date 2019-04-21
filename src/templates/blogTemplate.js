@@ -62,8 +62,8 @@ export default function Template({
         <div className="post-post">
           <div className="content">
             <div className="author">
-              <img class="profile" src="/daniel.little.jpg" alt="Daniel Little"/>
-              <span class="author-name">Written by {frontmatter.author}</span>
+              <img className="profile" src="/daniel.little.jpg" alt="Daniel Little"/>
+              <span className="author-name">Written by {frontmatter.author}</span>
             </div>
           </div>
         </div>
