@@ -127,7 +127,7 @@ module.exports = {
         output: `/sitemap.xml`,
         // Exclude specific pages or groups of pages using glob parameters
         // See: https://github.com/isaacs/minimatch
-        exclude: ["/page/*", "/tags/*"],
+        exclude: ["/page/*", "/tags/*", "/draft/*"],
         query: `
           {
             site {
