@@ -1,11 +1,11 @@
 ---
 author: "Daniel Little"
-categories: ["Dependancy Injection", "Ninject"]
+categories: ["Dependency Injection", "Ninject"]
 date: 2014-04-04T21:08:50Z
 description: ""
 draft: false
 path: "/ninject-modules"
-tags: ["Dependancy Injection", "Ninject"]
+tags: ["Dependency Injection", "Ninject"]
 title: "Ninject Modules"
 
 ---
@@ -15,18 +15,18 @@ title: "Ninject Modules"
 To create a Kernel using a Module it is passed as a constructor parameter.
 
 	var kernel = new StandardKernel(new ApplicationBindingsModule());
-    
+
 Then you can simply declare the Module which requires you to implement the abstract `Load` method.
-    
+
     public class ApplicationBindingsModule : NinjectModule
 	{
 		public override void Load()
-		{		
+		{
 			Bind<IClock>().To<Clock>().InSingletonScope();
-            
+
 			// If you use Ninject.Extensions.Convention you have to use `this` to use the extension method syntax.
 			//this.Bind(x => x.FromThisAssembly()...
 		}
 	}
-    
+
 Using Modules allows you to easily swap out bindings when creating a Kernel and provides a standard location for all your bindings.

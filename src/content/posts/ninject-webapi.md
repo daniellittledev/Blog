@@ -1,11 +1,11 @@
 ---
 author: "Daniel Little"
-categories: ["dependancy-injection", "ninject", "web-api"]
+categories: ["dependency-injection", "ninject", "web-api"]
 date: 2013-01-11T02:00:00Z
 description: ""
 draft: false
 path: "/ninject-webapi"
-tags: ["dependancy-injection", "ninject", "web-api"]
+tags: ["dependency-injection", "ninject", "web-api"]
 title: "Ninject and Singletons in the WebAPI with Scopes"
 
 ---

@@ -138,9 +138,7 @@ article {
   margin-top: 40px;
 }
 
-article p {
-  margin: 45px 0;
-  padding: 0;
+article {
   font-family: "Noto Serif","Times New Roman",Serif;
   font-size: 19px;
   font-weight: 400;
@@ -148,21 +146,34 @@ article p {
   color: rgba(35,37,40,0.7);
 }
 
-blockquote {
+article blockquote {
   padding: 10px 0 10px 5%;
   margin: 40px 0;
-  color: #38393c;
-  font-family: "Montserrat","Arial",Sans-Serif;
+  border-left: 6px solid #e8eaed;
+  text-align: left;
   font-size: 20px;
   font-weight: 400;
   line-height: 30px;
-  text-align: left;
-  border-left: 6px solid #e8eaed;
   letter-spacing: -0.5px;
+  color: rgba(35,37,40,0.8);
+}
+
+article p {
+  margin: 45px 0;
+  padding: 0;
 }
 
 article blockquote p {
-  margin: 0;
+  margin: 25px 0;
+}
+
+
+article blockquote :first-child {
+  margin-top: 10px;
+}
+
+article blockquote :last-child {
+  margin-bottom: 10px;
 }
 
 article :not(pre) > code[class*="language-"],
