@@ -1,6 +1,6 @@
 ---
 author: "Daniel Little"
-date: 2019-05-05T18:00:00Z
+date: 2019-05-16T18:00:00Z
 draft: false
 path: "/reliable-messaging-over-service-bus"
 categories: ["Reliable-Messaging", "ServiceBus", "Distributed-Systems"]
