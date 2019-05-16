@@ -26,6 +26,16 @@ export default function Template({
     <Layout>
       <Helmet>
         <title>{frontmatter.title}</title>
+
+        <meta property="og:title" content={frontmatter.title}/>
+        <meta property="og:description" content={markdownRemark.excerpt}/>
+        <meta property="og:url" content={`${meta.siteUrl}${frontmatter.path}`}/>
+        { frontmatter.image && (<meta property="og:image" content={`${meta.siteUrl}${frontmatter.image}`}/>)}
+
+        <meta name="twitter:title" content={frontmatter.title}/>
+        <meta name="twitter:description" content={markdownRemark.excerpt}/>
+        <meta name="twitter:url" content={`${meta.siteUrl}${frontmatter.path}`}/>
+
         <meta name="twitter:label1" content="Written by"/>
         <meta name="twitter:data1" content={meta.author}/>
         <meta name="twitter:label2" content="Filed under"/>
@@ -34,8 +44,6 @@ export default function Template({
         <meta name="twitter:creator" content={ "@" + meta.twitterHandle }/>
         { frontmatter.image && (<meta name="twitter:image" content={`${meta.siteUrl}${frontmatter.image}`}/>)}
 
-        <meta property="og:url" content={`${meta.siteUrl}${frontmatter.path}`}/>
-        { frontmatter.image && (<meta property="og:image" content={`${meta.siteUrl}${frontmatter.image}`}/>)}
         <meta property="article:published_time" content={frontmatter.date}/>
         <meta property="article:modified_time" content={frontmatter.date}/>
         <meta property="article:tag" content={first(frontmatter.tags)}/>
@@ -85,6 +93,7 @@ export const pageQuery = graphql`
     }
     markdownRemark(frontmatter: { path: { eq: $path } }) {
       html
+      excerpt(pruneLength: 280)
       frontmatter {
         dateCreated: date(formatString: "MMMM DD, YYYY")
         path
