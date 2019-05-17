@@ -132,7 +132,7 @@ You can also use the Outbox pattern with a Document database. However, it's typi
 }
 ````
 
-Many Document Databases will let you run queries so you can find unsent messages. If you're using Azure CosmosDB the change feed is a fanatic method of subscribing to changes through the database.
+Many Document Databases will let you run queries so you can find unsent messages. If you're using Azure CosmosDB the change feed is a fantastic method of subscribing to changes through the database.
 
 ## Final Notes
 
