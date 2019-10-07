@@ -3,7 +3,7 @@ module.exports = {
     title: `Daniel Little: Coding Blog`,
     description: `A blog about .net development and the web. Life is code`,
     author: `Daniel Little`,
-    siteUrl: `https://daniellittle.xyz`,
+    siteUrl: `https://daniellittle.dev`,
     twitterHandle: `daniellittledev`
   },
   plugins: [

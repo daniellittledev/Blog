@@ -6,9 +6,9 @@ const _ = require("lodash")
 exports.createPages = ({ actions, graphql }) => {
   const { createPage } = actions
 
-  const blogPostTemplate = path.resolve(`src/templates/blogTemplate.js`)
+  const blogPostTemplate = path.resolve(`./src/templates/blogTemplate.js`)
   const listTemplate = path.resolve("./src/templates/blog-list-template.js")
-  const tagTemplate = path.resolve("src/templates/tags.js")
+  const tagTemplate = path.resolve("./src/templates/tags.js")
 
   return graphql(`
     {
