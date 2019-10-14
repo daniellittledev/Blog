@@ -16,9 +16,9 @@ dotnet run
 
 
 
-However, recently I wanted to also run my tests using `dotnet test` to fit into a existing test suit and build script. By default Expecto tests won't be discovered by `dotnet test` but the good news is it's only two packages and an attribute away from working with both `run` and `watch`.
+However, recently I wanted to also run my tests using `dotnet test` to fit into a existing test suit and build script. By default Expecto tests won't be discovered by `dotnet test` but the good news is it's only two packages and an attribute away from working with both `run` and `test`.
 
-I started with a application that used no test discovery opting for explicit test registration like the following. 
+I started with an application that used no auto test discovery opting for explicit test registration like the following. 
 
 ```F#
 let allTests =
@@ -34,15 +34,15 @@ let main argv =
     runTestsWithArgs config argv allTests
 ```
 
-We'll come back to this later.
+We'll come back to this later, first we need to install some packages.
 
-The first step to setting up tests with dotnet core is to add the `Test.SDK` to the project file.
+In order to set up tests with dotnet core we need to add the `Test SDK` to the project file.
 
 ```xml
 <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
 ```
 
-However this will generate an entry point for your application and because we already have one we'll need to disable that by setting `GenerateProgramFile` to `false`. 
+However this will generate an entry point for your application and because we already have one we'll need to disable that by setting `GenerateProgramFile` to `false` in the project file.
 
 ```xml
 <PropertyGroup>
@@ -50,14 +50,14 @@ However this will generate an entry point for your application and because we al
 </PropertyGroup>
 ```
 
-After that we'll need to add the package `YoloDev.Expecto.TestSdk` in order for test discovery to work.
+After that we'll need to add the package `YoloDev.Expecto.TestSdk` in order `dotnet test` to discover Expecto tests.
 
 ```xml
 <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.8.0" />
 ```
 This package exposes Expecto Test Attributes for discovery via the Microsoft Test SDK.
 
-Finally, we can make one change to the `Program.fs` file, adding the `Tests` attribute to the tests so they can be discovered.
+Finally, we need to make one change to the `Program.fs` file, adding the `Tests` attribute to the tests so they can be discovered.
 
 ```F#
 [<Tests>]
