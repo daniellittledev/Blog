@@ -30,7 +30,7 @@ Building packages is expensive, building a package once saves quite a bit of tim
 
 ### Exact same code
 
-By building the package once and using that same package in every environment you can guarantee they'll all be running the exact same code. There are multiple reasons why you might end up with slight unexpected variations such as non-deterministic compilers, resulting in different optimisations. Dependencies could change, for example, if the build step runs an auto package restore or the build script relies on an external service. There may also be bugs in the tooling which can be unforeseen. By building the package once, there are fewer opportunities for things to go wrong, which means less risk.
+By building the package once and using that same package in every environment, you can guarantee they'll all be running the exact same code. There are multiple reasons why you might end up with slight unexpected variations such as non-deterministic compilers, resulting in different optimisations. Dependencies could change, for example, if the build step runs an auto package restore or the build script relies on an external service. There may also be bugs in the tooling which can be unforeseen. By building the package once, there are fewer opportunities for things to go wrong, which means less risk.
 
 ### Simplified deployment pipeline
 
@@ -38,134 +38,142 @@ Modern deployment pipelines such as those in products such as Octopus Deploy or 
 
 ## Loading Environment Settings in React
 
-In order to load the settings, I've gone with the approach of using two types of files, both of which are loaded asynchronously.
+In order to load the settings, I've gone with the approach of using a single file to keep loading times as low as possible.
 
-The first is the `environment.js` file which simply contains a `json string` naming the environment you want to load. In the example below the environment is `development` which is what I'd also check into version control. 
-
-```json
-// environment.json
-"development"
-```
-
-On deployment contents of this file is replaced with the appropriate environment name.
-
-The second type of file is a `settings.json` file. There can be multiple settings files, and by using the environment name in the file name, we can differentiate between them, and load the appropriate file. Let's say I have the following three files. I want to always load `settings.json` but load either `development` or `test` depending on the environment.
+There is a single `settings.json` file which contains the environment you want to load as well as blocks for the default and environment settings. In the example below the environment is `development` which is what I'd also check into version control.
 
 ```json
 // settings.json
 {
-  "siteName": "Example Website"
+  "environment": "development",
+  "default": {
+    "api": "defaultapi.com",
+    "siteName": "Example Site"
+  },
+  "development": {
+    "api": "developmentapi.com",
+    "banner": "You are in the Development Environment"
+  }
 }
 ```
 
-```json
-// settings.development.json
-{
-  "apiUrl": "http://localhost:2019"
-  "banner": "You are in the Development Environment"
-  "clientId": null
-}
-```
+On deployment, environment property is replaced with the appropriate environment name. Settings can also be added or modified. Then, when the application is run the application, I'll get the combination (using spread internally) the default and matching environment block.
 
-```json
-// settings.test.json
-{
-  "apiUrl": "https://test.domain.com"
-  "banner": "You are in the Test Environment"
-  "clientId": "gSxyKjfAqopIcYmbVw"
-}
-```
-
-After running the application, I'll get the combination (using spread internally) of the two files depending on the environment.
-
-In order to specify which files to load some configuration is required. Here we're provided with the environment name and can return a list of settings files to load.
-
-```tsx
-// App.ts
-
-const getConfig(environment: string) => [
-  { file: `settings.json`, optional: false },
-  { file: `settings.${environment}.json`, optional: true }
-];
-```
-
-To tie it all together, I'm using a component called `AppSettingsLoader` which loads both file types using a URL and the list of settings files above. It also takes two other props to determine what to show while the settings are being loaded or unavailable, and finally what to render once the settings are available.
+To tie it all together, I'm using a component called `AppSettingsLoader` which loads the settings given the URL of a settings file. It also takes three other props to determine what to show while the settings are being loaded or unavailable, what to render once the settings are available, and optionally an error prop.
 
 ```tsx
 import AppSettingsLoader from "react-environment-settings";
+import settingsAssetUrl from "./settings.json.txt";
 
-<AppSettingsLoader
-  environmentUrl={"environment.json"}
-  getConfig={getConfig}
+interface Settings {
+  api: string;
+  banner: string;
+}
+
+<AppSettingsLoader<Settings>
+  settingsUrl={settingsAssetUrl}
   loading={() => <div>Loading settings...</div>}
-  ready={settings => <pre>{JSON.stringify(settings, null, 2)}</pre>}
+  ready={s => <pre>{JSON.stringify(s, null, 2)}</pre>}
 />
 ```
 
-By using this component at the root of an application, you're then able to delay running the application until the settings have been loaded and are available.
+The AppSettingsLoader is also a generic component; in this example, you can also see the `settings` interface used to specify the type of the combines settings. So the settings for each environment need to match a common interface.
+
+```tsx
+<AppSettingsLoader<Settings> ... />
+```
+
+In order to load the settings themselves, there were a number of issues I had to work through. I wanted to keep the settings file separate to the application bundle, but `json` files are bundled. I also wanted to avoid caching issues so I couldn't just move the file into the public folder and fetch it from there.
+
+In order to load the settings file with typescript and Webpack I was able to use the [Importing Other Assets](https://webpack.js.org/guides/typescript/#importing-other-assets) functionality which lets you import a file, in this case, a `txt` file. The import will process the file giving it a unique filename, but the file is unmodified and kept in the `media` folder. 
+
+```
+> build
+  > static
+    > css
+    > js
+    > media
+      > settings.json.4355cbd.txt
+```
+
+This is the file you'd need to find and replace or modify on deployment.
+
+Importing the file also requires a module declaration.
+
+```typescript
+// global.d.ts
+declare module '*.txt' {
+  const content: string;
+  export default content;
+}
+```
+
+And when the file is imported, you'll receive the path to the file which can be passed to the `AppSettingsLoader` and loaded via a fetch.
+
+```typescript
+import settingsAssetUrl from "./settings.json.txt";
+```
+
+You could also provide a Url from another source is needed.
+
+Finally, by using `AppSettingsLoader` at the root of an application, you're then able to delay running the application until the settings have been loaded and are available.
+
+```tsx
+<AppSettingsLoader<Settings>
+  settingsUrl={settingsAssetUrl}
+  loading={() => <div>Loading...</div>}
+  ready={s => <App appSettings={s} />}
+/>
+```
 
 ## Installation and Code
 
 If you'd like to try it out, you can install this package.
 
-```
+```bash
 npm i react-environment-settings
 ```
 
-I won't go into all the code, but you can find the full project on GitHub [daniellittledev/react-environment-settings](https://github.com/daniellittledev/react-environment-settings). Originally I was just planning on sharing my approach with a blog post, but it just wouldn't be complete without a package on npm.
+I won't go into all the code, but you can find the full project on GitHub [daniellittledev/react-environment-settings](https://github.com/daniellittledev/react-environment-settings). Originally I was only planning on sharing my approach with a blog post, but it just wouldn't be complete without a package on npm.
 
-I've tried to keep the code relatively simple so I'll just share a few key parts.
+I've tried to keep the code relatively simple, so I'll just share a few key parts.
 
-The main file `index.tsx` contains the component itself, the main challenge here was getting allowing the settings object to be typed. I ended up using the approach of statically typing the Props inside the component but exporting it as a generic type.
+The bulk of the logic is inside two main files, `loadSettings.ts` which loads the merges the settings, and `index.ts` which contains the component itself.
 
-So if you import the component, you'll get this type.
-
-```
-type AppSettingsLoader<T = any> = FunctionComponent<AppSettingsLoaderProps<T>>;
-```
-
-Even though the component is defined with a static `Json` type.
-
-```ts
-const AppSettingsLoaderComponent: FC<AppSettingsLoaderProps<Json>> = props => {
-```
-
-Because it's exported using the open generic type.
-
-```
-export default AppSettingsLoader as AppSettingsLoader;
-```
-
-The entire component looks like this.
+Below is the main load settings function. Here I'd like to highlight in terms of error handling, fetch and loading issues are both caught at the top of this function.
 
 ```tsx
-import { SettingsConfig, SettingsFileConfig, Json, loadSettings } from "./loadSettings";
-import { FC, FunctionComponent, ReactElement, useEffect, useState } from "react";
-
-interface AppSettingsLoaderProps<T> {
-  environmentUrl: string;
-  getConfig: (environment: string) => SettingsConfig;
-  loading: () => ReactElement;
-  ready: (settings: T) => ReactElement;
-}
-
-type AppSettingsLoader<T = any> = FunctionComponent<AppSettingsLoaderProps<T>>;
-
-const AppSettingsLoaderComponent: FC<AppSettingsLoaderProps<Json>> = props => {
-  const [settings, setSettings] = useState<Json | null>(null);
-
-  useEffect(() => {
-    loadSettings(props.environmentUrl, props.getConfig).then(s => setSettings(s));
-  }, []);
-
-  return settings ? props.ready(settings) : props.loading();
+export async function loadSettings<T>(
+  settingsUrl: string
+) {
+  try {
+    const settings = await getSettings(settingsUrl);
+    const allSettings = getSelectedSettings(settings);
+    const mergedSettings = mergeSettings(allSettings) as unknown;
+    return success<T>(mergedSettings as T);
+  } catch (ex) {
+    return error<T>(ex);
+  }
 };
 
-const AppSettingsLoader = AppSettingsLoaderComponent;
-export default AppSettingsLoader as AppSettingsLoader;
-
-export { Json, SettingsFileConfig, SettingsConfig };
 ```
+
+This error is then directly accessible using the `error` prop on the `AppSettingsLoader` component. 
+
+```tsx
+switch (settings.type) {
+  ...
+  case "Error":
+    return props.error ? (
+      props.error(settings.error)
+    ) : (
+      <div>Error loading settings</div>
+    );
+}
+
+```
+
+So you have full control if something goes wrong.
 
 ## Wrapping up
 
