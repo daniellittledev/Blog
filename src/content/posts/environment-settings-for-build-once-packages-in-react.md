@@ -2,7 +2,7 @@
 author: "Daniel Little"
 date: 2020-01-14T17:00:00Z
 draft: false
-path: "/how-to-handle-environment-settings-for-build-once-packages-in-react"
+path: "/environment-settings-for-build-once-packages-in-react"
 categories: ["Build Once Deploy Everywhere", "Environment Settings", "React"]
 tags: ["Build Once Deploy Everywhere", "Environment Settings", "React"]
 title: "Environment Settings for Build Once Packages in React"
