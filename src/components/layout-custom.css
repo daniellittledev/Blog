@@ -233,3 +233,36 @@ article pre[class*="language-"] {
     float: none;
   }
 }
+
+/* Subscribe */
+.subscribe-message {
+  margin-bottom: 10px;
+}
+
+.mc-field-group {
+  padding: 5px 0;
+}
+
+.mc-field-group label {
+  width: 150px;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.mc-field-group input {
+  width: 300px;
+}
+
+#mc-embedded-subscribe {
+  margin-top: 10px;
+  background: white;
+  border-radius: 5px;
+  color: #4b4b4b;
+  border: none;
+  padding: 5px 10px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+#mc-embedded-subscribe:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
