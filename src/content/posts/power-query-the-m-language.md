@@ -3,7 +3,7 @@ author: "Daniel Little"
 categories: ["Functional Programming"]
 date: 2020-06-22T10:40:00Z
 description: "Recently I had the opportunity to write a Custom Connector for Power BI and come across something I didn't expect. Power Query is a lazy functional programming language."
-draft: true
+draft: false
 path: "/power-query-the-m-language"
 tags: ["Power Query", "Functional Programming"]
 title: "Power Query - The M Language"
