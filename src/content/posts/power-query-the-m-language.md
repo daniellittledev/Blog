@@ -104,4 +104,4 @@ in
 
 In this expression, we have a list of pets which contains the result of some API calls to a web service. However, only the first element of the array is ever accessed and because Power Query is lazy the second fetch will never actually be evaluated. In a custom connector, this could be used to access a paged rest API in order to import a table. And because evaluation is lazy using the standard `take` function will only fetch the pages that are needed are fetched.
 
-It's exciting to see functional programming, especially a language as interesting as Power Query, popping up in the mainstream. I had a blast learning about Power Query and I learnt so much along the way. If you're interested in trying out a functional fist language, whatever it may be, I encourage you, now is the time to check one out!
+It's exciting to see functional programming, especially a language as interesting as Power Query, popping up in the mainstream. I had a blast learning about Power Query and I learnt so much along the way. If you're interested in trying out a functional first language, whatever it may be, I encourage you, now is the time to check one out!
