@@ -2,7 +2,7 @@
 author: "Daniel Little"
 categories: ["Hypermedia"]
 date: 2020-07-07T08:00:00Z
-draft: true
+draft: false
 path: "/practical-hypermedia-controls"
 tags: ["Hypermedia", "Hypermedia Controls", "REST"]
 title: "Practical Hypermedia Controls"
