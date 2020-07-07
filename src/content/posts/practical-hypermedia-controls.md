@@ -8,7 +8,7 @@ tags: ["Hypermedia", "Hypermedia Controls", "REST"]
 title: "Practical Hypermedia Controls"
 ---
 
-A lot has been written about REST but less so when it comes to Hypermedia Controls. I haven't seen too many Hypermedia based APIs out in the wild. I think there are two main reasons for this. First, it's just something many people haven't been exposed to, and second, it requires a little more up-front effort in order to get the ball rolling. However, I believe it's an incredibly useful pattern and it's easier to get started than you might think. This post aims to help out with that first problem, exposure. We'll take a look at what Hypermedia Controls are and why they're useful.
+A lot has been written about REST but less so when it comes to Hypermedia Controls. I haven't seen too many Hypermedia based APIs out in the wild. I theorize that there are two main reasons for this. First, it is something many people haven't been exposed to, and second, it requires a little more up-front effort in order to get the ball rolling. However, I believe it's an incredibly useful pattern and it's easier to get started than you might think. This post aims to help out with that first problem, exposure. We'll take a look at what Hypermedia Controls are and why they're useful.
 
 Whatever the reason for the rarity of Hypermedia Controls, what you might commonly see in a REST API instead, is something like this.
 
@@ -27,8 +27,8 @@ This JSON object represents a user account. In this system, there are a few simp
 
 However, there are some problems with this model.
 
-- We can't tell if a user is should be able to activate the account.
-- We can't tell if we can activate it, we just have to assume it can be because we can't deactivate it.
+- We can't tell if the current user should be able to activate or deactivate the account.
+- We can't tell if the account can be activated, we have to assume it can be because we can't deactivate it.
 - We don't know how to update or deactivate an account, we'd need more external information like the URL.
 
 Wouldn't it be nice if all these things were a bit easier to figure out? I think so too!
@@ -84,7 +84,7 @@ If you'd like things to be a bit more dynamic or server controlled you can also 
 }
 ```
 
-It's really up to you to choose how much information is provided to the client. However, I'd be cautious of adding too much. You might be tempted to include other metadata like field types or validation rules. But the main global here is to keep duplicate logic out of the client and keep the server in control of application state. Decoupling too much tends to lead to the [Inner Platform Effect](https://en.wikipedia.org/wiki/Inner-platform_effect).
+It's really up to you to choose how much information is provided to the client. However, I'd be cautious of adding too much. You might be tempted to include other metadata like field types or validation rules. But the main goal here is to keep duplicate logic out of the client and keep the server in control of application state. Decoupling too much tends to lead to the [Inner Platform Effect](https://en.wikipedia.org/wiki/Inner-platform_effect).
 
 ## Client-Side Routing
 
