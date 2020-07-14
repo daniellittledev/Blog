@@ -13,7 +13,7 @@ Hypermedia Controls in REST provide links and actions with each response pointin
 Enter Typescript. Adding types to JavaScript allows us to write safer code, so naturally I wanted to figure out how to make a Hypermedia  Controls type-safe. Typically when writing a type-safe API you might start out with something like this.
 
 ```typescript
-const api = (baseUrl: string) => (fetch: Fetch) => ({
+const api = (fetch: Fetch) => ({
   getAccount: async (id: string) : AccountResource => {
     const response = await fetch(`/account/${id}`, jsonGetOptions);
     return response.json() as AccountResource;
@@ -44,7 +44,7 @@ In this example the account email address is being updated and then the Hypermed
 
 ## Types for Links and Actions
 
-First, Let's take a look at what the `AccountResourse` type looks like.
+First, Let's take a look at what the `AccountResource` type looks like.
 
 ```typescript
 export type AccountResource = {
@@ -92,7 +92,7 @@ export type Relationship =
 
 ## Contextual Relationships
 
-In the `AccountResourse`  above you can see there are three potential actions. The `update` action is always available but `activate` and `deactivate` are optional so the client only has to check for the presence of the optional relationships. The server can then decide when these optional actions are available, enabling the actions for the client based on the state of the resource.
+In the `AccountResource`  above you can see there are three potential actions. The `update` action is always available but `activate` and `deactivate` are optional so the client only has to check for the presence of the optional relationships. The server can then decide when these optional actions are available, enabling the actions for the client based on the state of the resource.
 
 ```typescript
 const account = fetchAccount(url)
@@ -108,8 +108,6 @@ if (accountHypermedia.deactivate) {
 ## Creating a Hypermedia Model
 
 Next, let's look into the `accountHypermedia` function, which does the heavy lifting of transforming the resource with hypermedia into a typed hypermedia model containing all the links and actions. To make the conversion easier I've also written a function `createHypermediaModel` which helps to create the API for a resource.
-
-Note: In Typescript, you are able to pass through a generic function as a parameter. This makes composing (an instance of) fetch and the request/response types nice and convenient.
 
 ```typescript
 type none = void // Used when a Request requires no payload (function <T>(arg: T) would need no arguments)
@@ -131,6 +129,8 @@ You can view this code as a mapping from the resource to a set of, ready to use,
 resolve<none, AccountResource>(resource._links.self)
 ```
 
+_Note: In Typescript, you are able to pass through a generic function as a parameter. The `resolve` parameter makes use of this to compose (an instance of) fetch and the request/response types._
+
 The `ResolvedRelationship` makes it convenient to access the `href` and other metadata if you only have access to the hypermedia model.
 
 ```typescript
@@ -141,9 +141,30 @@ export type ResolvedRelationship<Request, Response> = {
 }
 ```
 
-## Deeper into the Code
+## Multiple Resources
 
-That covers all the main pieces of using `createHypermediaModel` to build a type-safe hypermedia API. Please let me know if you liked this approach as I'm considering wrapping this up into an npm package. However, I've glossed over the detail of how `createHypermediaModel` works. It's mostly the glue and pluming but there are a few interesting parts. Here is the bulk of the code, but don't feel like you need to read it all before continuing.
+The `createHypermediaModel` function focuses on creating a hypermedia model for a single resource. In order to create a model for an entire API you can use a `createApi` function to create a single object composing the sub-APIs for each individual resource.
+
+```typescript
+export function createApi(fetch: Fetch) {
+  const resolve = createResolver(fetch)
+
+  return {
+    getAccount: (url: string) => resolve<none, AccountResource>(url).call(),
+    accounts: accountHypermedia(resolve),
+
+    // More models go here!
+  }
+}
+```
+
+That covers all the main pieces of using `createHypermediaModel` to build a type-safe hypermedia API. Please let me know if you liked this approach as I'm considering wrapping this up into an npm package. However, I've glossed over the detail of how `createHypermediaModel` works. It's mostly the glue and pluming but there are a few interesting parts. Feel free to read the apendix below if you'd like to dig deeper under the covers.
+
+That's all I have for now and as always thanks for reading!
+
+## Apendix: Deeper into the Code
+
+ Here is the bulk of the code, but don't feel like you need to read it all before continuing.
 
 ```typescript
 export type JsonFetch = <Request, Response>(method: Method, url: string, data?: Request) => Promise<Response>
@@ -189,22 +210,3 @@ The code is written in a functional programming style and functions declared bef
 The first function is, therefore, `ceateHypermediaModel`, which uses a bit of currying so the resolver and resource can be provided at different times. Dependencies such as Fetch and the Resolver are threaded through the call stack so no global references are needed.
 
 The other main function is `createResolver` which constructs the `ResolvedRelationship`. Its main job is to wrap up the call to fetch using the given relationship and the request/response types.
-
-## Multiple Resources
-
-Finally, `createHypermediaModel` focuses on creating a hypermedia model for a single resource. In order to create a model for an entire API you can use a `createApi` function to create a single object composing the sub-APIs for each individual resource.
-
-```typescript
-export function createApi(fetch: Fetch) {
-  const resolve = createResolver(fetch)
-
-  return {
-    getAccount: (url: string) => resolve<none, AccountResource>(url).call(),
-    accounts: accountHypermedia(resolve),
-
-    // More models go here!
-  }
-}
-```
-
-That's all I have for now and as always thanks for reading!
