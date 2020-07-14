@@ -145,6 +145,8 @@ export type ResolvedRelationship<Request, Response> = {
 }
 ```
 
+I use `href` from the `ResolvedRelationship` to follow links to different pages by changing the URL. This means exposing the `Method` isn't nessesary as they are always `GET` requests.
+
 ## Multiple Resources
 
 The `createHypermediaModel` function focuses on creating a hypermedia model for a single resource. In order to create a model for an entire API you can use a `createApi` function to create a single object composing the sub-APIs for each individual resource.
