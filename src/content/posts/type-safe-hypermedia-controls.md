@@ -90,6 +90,8 @@ export type Relationship =
   | DetailedRelationship
 ```
 
+I usually use the `DetailedRelationship` type but sometimes it's conventient to only provide the URL for links, which typically use the `GET` verb.
+
 ## Contextual Relationships
 
 In the `AccountResource`  above you can see there are three potential actions. The `update` action is always available but `activate` and `deactivate` are optional so the client only has to check for the presence of the optional relationships. The server can then decide when these optional actions are available, enabling the actions for the client based on the state of the resource.
@@ -104,6 +106,8 @@ if (accountHypermedia.deactivate) {
   await accountHypermedia.deactivate.call() // <- Also Typechecked, no request payload is needed!
 }
 ```
+
+In this sample, `deactivate` has to be null checked before it can be used. The `call` function also knows that `deactivate` takes no payload and what the return type is.
 
 ## Creating a Hypermedia Model
 
@@ -164,7 +168,7 @@ That's all I have for now and as always thanks for reading!
 
 ## Apendix: Deeper into the Code
 
- Here is the bulk of the code, but don't feel like you need to read it all before continuing.
+ Here is the bulk of the code, feel free to skim over it and jump to the alaysis at the bottom.
 
 ```typescript
 export type JsonFetch = <Request, Response>(method: Method, url: string, data?: Request) => Promise<Response>
