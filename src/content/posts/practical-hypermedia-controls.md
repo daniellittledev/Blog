@@ -68,7 +68,7 @@ All this makes the API much easier to reason about and use. But the key benefit 
 
 ## More Control
 
-We can also do more than just make links and actions available or unavailable. We could also show that an action exists but isn't available. On the UI this could manifest as a visible but disabled button. 
+We can also do more than just make links and actions available or unavailable. We could also show that an action exists but isn't available. On the UI this could manifest as a visible but disabled button.
 
 ```json
 "actions": {
@@ -105,7 +105,7 @@ GET "/"
 }
 ```
 
-Following a link such as `my-account` (which the client knows by name) would update the browsers route to match, eg. `/account/0001`. The client-side routing rules mirror the server-side rules to render the relevant components but simply forward the URL directly to the API to fetch a resource. Note that the value here is that the client doesn't have to hardcode, reconstruct or build any URLs. 
+Following a link such as `my-account` (which the client knows by name) would update the browsers route to match, eg. `/account/0001`. The client-side routing rules mirror the server-side rules to render the relevant components but simply forward the URL directly to the API to fetch a resource. Note that the value here is that the client doesn't have to hardcode, reconstruct or build any URLs.
 
 ```json
 // Request:
@@ -124,4 +124,4 @@ Actions are a little different and don't usually represent a route change. I rec
 
 ## Try it out
 
-Next time you're building a form with a few actions especially if those actions change under different conditions or states consider using Hypermedia Controls. I hope you enjoyed this article, and if so make sure to keep an eye out for my next post on Type Safe Hypermedia with Typescript.
+Next time you're building a form with a few actions especially if those actions change under different conditions or states consider using Hypermedia Controls. I hope you enjoyed this article, and if so make sure to keep an eye out for my next post on [Type Safe Hypermedia with Typescript](/type-safe-hypermedia-controls).

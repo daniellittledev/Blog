@@ -2,7 +2,7 @@
 author: "Daniel Little"
 categories: ["Hypermedia"]
 date: 2020-07-12T08:00:00Z
-draft: true
+draft: false
 path: "/type-safe-hypermedia-controls"
 tags: ["Typescript", "Hypermedia", "Hypermedia Controls", "REST"]
 title: "Type-Safe Hypermedia Controls"
