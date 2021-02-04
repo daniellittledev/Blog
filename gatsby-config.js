@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: `Daniel Little: Coding Blog`,
-    description: `A blog about .net development and the web. Life is code`,
+    title: `Daniel Little Dev`,
+    description: `I write about building better software with a focus on Team Culture, Web Development, Type Safety, Functional Programming, Event Driven Systems. People first.`,
     author: `Daniel Little`,
     siteUrl: `https://daniellittle.dev`,
     twitterHandle: `daniellittledev`
