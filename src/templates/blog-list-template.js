@@ -12,7 +12,7 @@ export default class BlogList extends React.Component {
     const data = this.props.data
     const posts = this.props.data.allMarkdownRemark.edges
     const metadata = data.site.siteMetadata
-    metadata.pageUrl = `${data.site.siteMetadata.siteUrl}${this.props.path}`
+    metadata.pageUrl = `${data.site.siteMetadata.siteUrl}${this.props.url_path}`
     return (
       <Layout>
         <Helmet>

@@ -20,7 +20,7 @@ However, recently I wanted to also run my tests using `dotnet test` to fit into 
 
 I started with an application that used no auto test discovery opting for explicit test registration like the following. 
 
-```F#
+```fsharp
 let allTests =
     testList "all-tests" [
         BuilderTests.tests
@@ -59,7 +59,7 @@ This package exposes Expecto Test Attributes for discovery via the Microsoft Tes
 
 Finally, we need to make one change to the `Program.fs` file, adding the `Tests` attribute to the tests so they can be discovered.
 
-```F#
+```fsharp
 [<Tests>]
 let allTests =
     testList "all-tests" [

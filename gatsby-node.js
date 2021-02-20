@@ -53,7 +53,7 @@ exports.createPages = ({ actions, graphql }) => {
         path,
         component: listTemplate,
         context: {
-          path,
+          url_path: path,
 
           limit: postsPerPage,
           skip: i * postsPerPage,
