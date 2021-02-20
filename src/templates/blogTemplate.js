@@ -5,7 +5,7 @@ import PostMetadata from "../components/post-metadata"
 import TagList from "../components/tag-list"
 import Helmet from "react-helmet"
 import "prismjs/themes/prism-solarizedlight.css"
-import Img from "gatsby-image"
+//import Img from "gatsby-image"
 
 function first(values) {
   values = values || []
@@ -22,17 +22,16 @@ export default function Template({
   const { markdownRemark } = data // data.markdownRemark holds our post data
   const { frontmatter, html } = markdownRemark
   const meta = data.site.siteMetadata
+  meta.pageUrl = `${meta.siteUrl}${frontmatter.path}`
   return (
     <Layout>
       <Helmet>
-        <title>{frontmatter.title}</title>
+        <title>{frontmatter.title} - Daniel Little Dev</title>
+        <link rel="canonical" href={meta.pageUrl} />
 
         <meta property="og:title" content={frontmatter.title} />
         <meta property="og:description" content={markdownRemark.excerpt} />
-        <meta
-          property="og:url"
-          content={`${meta.siteUrl}${frontmatter.path}`}
-        />
+        <meta property="og:url" content={meta.pageUrl} />
         {frontmatter.image && (
           <meta
             property="og:image"
@@ -40,12 +39,10 @@ export default function Template({
           />
         )}
 
+        <meta name="twitter:card" content="summary"/>
         <meta name="twitter:title" content={frontmatter.title} />
         <meta name="twitter:description" content={markdownRemark.excerpt} />
-        <meta
-          name="twitter:url"
-          content={`${meta.siteUrl}${frontmatter.path}`}
-        />
+        <meta name="twitter:url" content={meta.pageUrl} />
 
         <meta name="twitter:label1" content="Written by" />
         <meta name="twitter:data1" content={meta.author} />
@@ -99,8 +96,7 @@ export default function Template({
           <div className="content">
             <div className="subscribe">
               <div className="subscribe-message">
-                If you enjoyed this post, consider subscribing so you don't miss
-                the next one!
+                If you enjoyed this post, subscribe to the <a href="/rss">rss feed</a> or mailing list. I'll only ever email you about a new post. 
               </div>
               <div id="mc_embed_signup">
                 <form
@@ -110,28 +106,28 @@ export default function Template({
                   name="mc-embedded-subscribe-form"
                   className="validate"
                   target="_blank"
-                  novalidate
+                  noValidate
                 >
                   <div id="mc_embed_signup_scroll">
-                    <div class="mc-field-group">
-                      <label for="mce-EMAIL">Email Address *</label>
+                    <div className="mc-field-group">
                       <input
+                        placeholder="Email Address"
                         type="email"
                         name="EMAIL"
                         className="required email"
                         id="mce-EMAIL"
                       />
                     </div>
-                    <div class="mc-field-group">
-                      <label for="mce-MMERGE3">Name </label>
+                    <div className="mc-field-group">
                       <input
+                        placeholder="Name"
                         type="text"
                         name="MMERGE3"
                         className=""
                         id="mce-MMERGE3"
                       />
                     </div>
-                    <div id="mce-responses" class="clear">
+                    <div id="mce-responses" className="clear">
                       <div
                         className="response"
                         id="mce-error-response"
@@ -150,16 +146,16 @@ export default function Template({
                       <input
                         type="text"
                         name="b_240a8a31cc1b5422e7bee8db0_2e58d0e026"
-                        tabindex="-1"
+                        tabIndex="-1"
                       />
                     </div>
-                    <div class="clear">
+                    <div className="clear">
                       <input
                         type="submit"
                         value="Subscribe"
                         name="subscribe"
                         id="mc-embedded-subscribe"
-                        className="button animated-button victoria-one"
+                        className="button"
                       />
                     </div>
                   </div>

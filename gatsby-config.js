@@ -117,7 +117,7 @@ module.exports = {
               }
             `,
             output: "/rss.xml",
-            title: "Daniel Little: Coding Blog",
+            title: "Daniel Little Dev",
           },
         ],
       },

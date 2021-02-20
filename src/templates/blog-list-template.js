@@ -1,16 +1,38 @@
 import React from "react"
-import { graphql } from "gatsby"
+import { StaticQuery, graphql } from "gatsby"
+
 import Layout from "../components/layout"
 import "./blog-list-template.css"
 
 import PostMetadata from "../components/post-metadata"
-import Tags from "../components/top-tags";
+import { Helmet } from "react-helmet"
 
 export default class BlogList extends React.Component {
   render() {
+    const data = this.props.data
     const posts = this.props.data.allMarkdownRemark.edges
+    const metadata = data.site.siteMetadata
+    metadata.pageUrl = `${data.site.siteMetadata.siteUrl}${this.props.path}`
     return (
       <Layout>
+        <Helmet>
+          <title>Daniel Little Dev</title>
+          <meta name="description" content={metadata.description}/>
+          <link rel="canonical" href={metadata.pageUrl} />
+
+          <meta property="og:site_name" content={metadata.title}/>
+          <meta property="og:type" content="website"/>
+          <meta property="og:title" content={metadata.title}/>
+          <meta property="og:description" content={metadata.description}/>
+          <meta property="og:url" content={metadata.pageUrl}/>
+
+          <meta name="twitter:card" content="summary"/>
+          <meta name="twitter:title" content={metadata.title}/>
+          <meta name="twitter:description" content={metadata.description}/>
+          <meta name="twitter:url" content={metadata.pageUrl}/>
+          <meta name="twitter:site" content={ "@" + metadata.twitterHandle }/>
+
+        </Helmet>
         <div className="blog-list">
           {posts.map(({ node }) => {
             const title = node.frontmatter.title || node.fields.path
@@ -39,7 +61,15 @@ export default class BlogList extends React.Component {
 }
 
 export const blogListQuery = graphql`
-  query blogListQuery($skip: Int!, $limit: Int!) {
+  query BlogListQuery($skip: Int!, $limit: Int!) {
+    site {
+      siteMetadata {
+        title
+        description
+        siteUrl
+        twitterHandle
+      }
+    }
     allMarkdownRemark(
       sort: { fields: [frontmatter___date], order: DESC }
       filter: { frontmatter: { draft: { eq: false } } }
