@@ -147,6 +147,8 @@ let checkCallback (login: LoginState option) (state: string option) (code: strin
 
 Because the protocol rules are pure functions, each one gets a test: state mismatch, nonce mismatch, a missing verifier, a missing or expired login cookie, Entra's `error=` reply, an open redirect through `returnTo`, the PKCE challenge, and token error parsing. That's a level of confidence that's hard to get when the same rules are inside framework event handlers.
 
+There's no client secret either. The API proves who it is to Entra with a signed client assertion, and the signing key lives in Key Vault and never leaves it.
+
 ## Things I learned the hard way
 
 A few things came up in code review, or in production, that are worth knowing whichever way you build this:
