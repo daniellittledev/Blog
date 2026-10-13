@@ -9,7 +9,7 @@ tags: ["Security", "OAuth", "OIDC", "FSharp", "dotnet", "Azure"]
 title: "Keep Your Tokens Out of the Browser"
 ---
 
-Every morning, the users of [Praisable](https://praisable.dev) were signed out. Not because they'd done anything wrong, and not because of a bug in the usual sense. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the people who write the OAuth standards recommend for browser apps.
+Every morning, the users of [Praisable](https://praisable.dev) were signed out. Not because they'd done anything wrong, and not because of a bug in the usual sense. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
 
 In this post I want to make the case for the alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and in my case it also fixed the daily sign-outs. Then I'll go through the less comfortable part, which is what happens when you try to build one on .NET today, and why I ended up writing a small OIDC component instead of reaching for Microsoft's packages.
 
@@ -19,23 +19,29 @@ When a single-page app runs OAuth itself, the browser ends up holding the tokens
 
 That's the core issue. Anything your JavaScript can read, any JavaScript running on your page can read. One cross-site scripting bug, or one compromised dependency in a `node_modules` folder the size of a small moon, and an attacker isn't just acting as the user while the tab is open. They can copy the refresh token and keep minting access tokens from their own machine, long after the user has closed the tab.
 
-Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra issues refresh tokens to single-page apps with a fixed 24-hour lifetime that can't be configured, while confidential clients get refresh tokens that last 90 days and are replaced each time they're used.[^entra-rt] That's a sensible trade-off from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. Which is how Praisable's users ended up with their morning ritual.
+Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra gives single-page apps refresh tokens that expire after 24 hours, and every token refreshed from one keeps that original expiry. Other clients get refresh tokens with a 90-day inactivity window, which in practice slides along as long as the user keeps coming back. Neither lifetime can be configured, including in External ID.[^entra-rt] Microsoft is explicit about the reason: "In order to minimize the risk of stolen refresh tokens, SPAs are issued tokens valid for 24 hours only."[^entra-3pc] That's a sensible trade-off from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. Which is how Praisable's users ended up with their morning ritual.
 
 The fix for the security problem and the fix for the usability problem turn out to be the same thing: stop giving the browser tokens.
 
 ## What the standards recommend
 
-The IETF OAuth working group's [OAuth 2.0 for Browser-Based Applications](https://datatracker.ietf.org/doc/draft-ietf-oauth-browser-based-apps/) is the best current guidance on this, and it is unusually direct. It walks through the attacks that become possible once malicious JavaScript runs in your app, then compares the architectures that browser apps can use. Of these, it describes the Backend-for-Frontend as the most secure option.[^ietf-bff]
+The standards have caught up with this. In August 2026 the IETF published [RFC 10017, OAuth 2.0 for Browser-Based Applications](https://www.rfc-editor.org/rfc/rfc10017.html), as a Best Current Practice. It walks through what malicious JavaScript can do once it runs in your app, including that it can "steal data from origin-based storage mechanisms (e.g., localStorage, IndexedDB)", then compares the architectures browser apps can use. The verdict on the Backend-for-Frontend is direct:
 
-{{VERIFY: exact quote from the IETF draft, its current revision, and whether it is an RFC yet. Filled in from the verification pass.}}
+> This architecture is strongly recommended for business applications, sensitive applications, and applications that handle personal data.[^rfc]
 
-The reasoning is straightforward. In a BFF:
+And for a browser app that runs OAuth itself, the same RFC says the opposite: that architecture "is not recommended for business applications, sensitive applications, and applications that handle personal data."
+
+OWASP is even blunter: "Do not store authentication tokens, session IDs, JWTs, refresh tokens, or any credential in `localStorage` or `sessionStorage`. … a single XSS vulnerability discloses every token." It recommends `HttpOnly; Secure; SameSite=Strict` cookies or a BFF instead.[^owasp-html5]
+
+The browsers have been nudging in the same direction. With third-party cookies blocked, the hidden-iframe "silent renew" that SPAs relied on stops working, and Microsoft's own guidance notes that "`prompt=none` in an iframe is no longer an option when third-party cookies are blocked."[^entra-3pc]
+
+The reasoning behind the recommendation is straightforward. In a BFF:
 
 - A server-side component, the BFF, is the OAuth client. Because it runs on a server, it's a **confidential client**: it authenticates to the identity provider with a credential no browser can see.
 - The BFF runs the sign-in flow, receives the tokens, and keeps them.
 - The browser only gets a session cookie, marked `HttpOnly` so script can't read it.
 
-An XSS bug is still bad in a BFF. Malicious script can still make requests from the user's browser while the page is open. But it can no longer walk away with a long-lived credential, because there isn't one in the browser to take. The attack shrinks from "own the account from anywhere, for as long as the token lives" to "act as the user, in this tab, while it stays open".
+An XSS bug is still bad in a BFF, and the RFC is honest about it: injected script can still send requests through the user's session while the page is open. But, in its words, "the use of HttpOnly cookies prevents the attacker from directly accessing the session state." It can no longer walk away with a long-lived credential, because there isn't one in the browser to take. The attack shrinks from "own the account from anywhere, for as long as the token lives" to "act as the user, in this tab, while it stays open".
 
 ## The cookie does the heavy lifting
 
@@ -47,8 +53,8 @@ Set-Cookie: __Host-session=<opaque value>; Path=/; Secure; HttpOnly; SameSite=St
 
 - `HttpOnly` keeps it away from script.
 - `Secure` keeps it off plain HTTP.
-- The `__Host-` prefix makes the browser reject the cookie unless it is `Secure`, has `Path=/` and no `Domain` attribute. So it is tied to exactly one origin, and a sibling subdomain can't set or overwrite it.
-- `SameSite=Strict` means the browser won't send it on any request that starts from another site.
+- The `__Host-` prefix makes the browser reject the cookie unless it is `Secure`, has `Path=/` and no `Domain` attribute. So it is tied to exactly one origin, and a sibling subdomain can't set or overwrite it. OWASP recommends it specifically for session IDs.[^owasp-session]
+- `SameSite=Strict` means the browser won't send it on any request that starts from another site.[^mdn-cookie]
 
 That last one is the reason cookies earned their bad reputation in the first place: cross-site request forgery. `SameSite` largely puts that to rest. With `Strict`, a form on `evil.example` that posts to your API arrives without the cookie, so it arrives unauthenticated. For defence in depth, Praisable also rejects any cookie-authenticated write whose `Sec-Fetch-Site` header says it didn't come from our own origin:
 
@@ -65,7 +71,7 @@ let isCrossSiteWrite (method: string) (secFetchSite: string) =
 
 `Strict` does have a cost: following a link to your site from somewhere else arrives without the cookie. For a server-rendered app, that's a user who looks signed out until they navigate again. For a SPA whose HTML is static and whose API calls are same-origin `fetch` requests, it costs nothing, because the first request that needs the cookie is the page's own `fetch`, which is same-site. That is a nice property of SPAs that tends to get overlooked.
 
-There is one place where `Strict` doesn't work, and it's the sign-in itself. The identity provider's redirect back to your callback is a cross-site navigation, so a `Strict` cookie set at the start of sign-in won't come back with it. Praisable uses a second, short-lived `__Host-login` cookie with `SameSite=Lax` to carry the sign-in state (the `state`, `nonce` and PKCE verifier) across that round trip. `Lax` sends cookies on top-level `GET` navigations, which is exactly what the redirect is.
+There is one place where `Strict` doesn't work, and it's the sign-in itself. The identity provider's redirect back to your callback is a cross-site navigation, so a `Strict` cookie set at the start of sign-in won't come back with it. Praisable uses a second, short-lived `__Host-login` cookie with `SameSite=Lax` to carry the sign-in state (the `state`, `nonce` and PKCE verifier) across that round trip. `Lax` sends cookies on cross-site top-level navigations that use a safe method like `GET`, which is exactly what the redirect is. That's also why Praisable asks for `response_mode=query`: with `form_post`, the redirect back is a cross-site `POST`, and the login cookie would need `SameSite=None`. ASP.NET Core's own OIDC handler sets its nonce and correlation cookies to `None` for exactly this reason.[^aspnet-samesite]
 
 Having a single origin helps a great deal. Praisable's Static Web App proxies `praisable.dev/api` to the Function App, so there's no CORS, and one cookie covers the whole app.
 
@@ -96,17 +102,13 @@ The session itself is a Cosmos DB document in the user's partition. Its id is a 
 
 This is where I expected to install a package and move on. .NET has excellent identity libraries, and none of what follows is a criticism of them. They're good at what they're for. They just weren't built for this shape of app: an API on Azure Functions that is its own BFF, with a server-side session and no downstream API.
 
-**Microsoft.Identity.Web** is the obvious first choice for "sign in to an ASP.NET Core app with Entra". It's built on ASP.NET Core's authentication middleware: `AddMicrosoftIdentityWebApp`, the cookie authentication handler, and `UseAuthentication` in the request pipeline. Praisable's API runs on the Azure Functions isolated worker. Its ASP.NET Core integration gives you `HttpContext`, `HttpRequest` and `IActionResult`, but not the ASP.NET Core middleware pipeline those authentication handlers expect.[^functions-aspnet] On top of that, its default session is the authentication ticket itself, encrypted into the cookie. Server-side sessions are possible, but need a custom `ITicketStore`.[^ticket-store] That's a lot of framework to bend for a small flow.
+**Microsoft.Identity.Web** is the obvious first choice for "sign in to an ASP.NET Core app with Entra". By its own description, it's "the glue between the ASP.NET Core middleware and MSAL .NET". `AddMicrosoftIdentityWebApp` configures ASP.NET Core's cookie and OpenID Connect handlers, and `UseAuthentication` runs them in the request pipeline.[^idweb] Praisable's API runs on the Azure Functions isolated worker, and Microsoft is clear about what its ASP.NET Core integration leaves out: "it doesn't provide access to the ASP.NET Core middleware pipeline and routing capabilities."[^functions-aspnet] You get `HttpRequest` and `IActionResult`, but not the pipeline those authentication handlers run in. On top of that, the cookie handler's default session is the authentication ticket itself, encrypted into the cookie. Server-side sessions are possible, but need a custom `ITicketStore`.[^ticket-store] That's a lot of framework to bend for a small flow.
 
-{{VERIFY: Functions isolated worker + UseAuthentication support; Microsoft.Identity.Web default cookie ticket / ITicketStore.}}
+**MSAL.NET** fits Functions much better. `ConfidentialClientApplication` handles PKCE, client assertions and refresh token rotation, and it doesn't care what host it runs in. But its purpose is getting and caching *access tokens* for downstream APIs, which is the one thing Praisable doesn't need. And by design, MSAL doesn't hand you the refresh token: "MSAL.NET doesn't expose refresh tokens for security reasons. MSAL handles refreshing tokens for you."[^msal-rt] Instead you persist an opaque token cache through `SetBeforeAccess` and `SetAfterAccess` callbacks around a stateful client object.[^msal-cache] So each session document would hold MSAL's cache blob rather than a refresh token the app controls, and the daily revocation check would turn into "ask MSAL for a token it thinks it already has, and interpret what happens". MSAL.NET also parses the ID token without validating its signature, while Microsoft's guidance is that "confidential clients should validate ID tokens".[^id-tokens] So you'd still need `Microsoft.IdentityModel` alongside it.
 
-**MSAL.NET** fits Functions much better. `ConfidentialClientApplication` handles PKCE, client assertions and refresh token rotation, and it doesn't care what host it runs in. But its purpose is getting and caching *access tokens* for downstream APIs, which is the one thing Praisable doesn't need. And it deliberately doesn't expose the refresh token; Microsoft documents this as by design.[^msal-rt] Instead you persist an opaque token cache through serialization callbacks around a stateful client object. So each session document would hold MSAL's cache blob rather than a refresh token the app controls. The daily revocation check would turn into "ask MSAL for a token it thinks it already has, and interpret what happens".
+**Duende BFF** is the most complete BFF implementation for .NET, and if you're on a full ASP.NET Core host it's worth a serious look. It targets that host, and production use needs a license. It's free for development, testing and personal projects, and there's a community edition for small organisations.[^duende] I didn't evaluate it in depth, because it doesn't fit the Functions host.
 
-{{VERIFY: MSAL.NET refresh token not exposed by design; whether it validates ID token signatures.}}
-
-**Duende BFF** is the most complete BFF implementation for .NET, and if you're on a full ASP.NET Core host it's worth a look. It targets that host and its middleware, and it's covered by Duende's commercial licence.[^duende] I didn't evaluate it in depth, because it doesn't fit the Functions host.
-
-{{VERIFY: Duende BFF host requirements and licensing, current version.}}
+It's also telling where Microsoft's own guidance points. The ASP.NET Core docs now include a Blazor sample that uses the BFF pattern with YARP and Aspire.[^blazor-bff] The Entra docs for single-page apps, though, still lead with MSAL.js running in the browser. Outside a full ASP.NET Core host, the pattern the RFC strongly recommends is something you assemble yourself.
 
 Once I'd ruled those out, it became clear what was actually missing. The genuinely hard parts of OIDC were already in a dependency Praisable used, `Microsoft.IdentityModel`:
 
@@ -170,9 +172,18 @@ If you're building a browser app today, I think the default should be a BFF with
 
 On .NET the picture is less tidy. If you're on a full ASP.NET Core host, use what's there. If you're not, or you want the session to be yours, don't be afraid of the protocol. With `Microsoft.IdentityModel` handling keys and token validation, the remaining glue is small, mostly pure, and very easy to test. And at 300 lines, it's a liability I'm happy to carry.
 
-[^entra-rt]: {{VERIFY: Microsoft Learn, "Refresh tokens in the Microsoft identity platform" — URL and quote.}}
-[^ietf-bff]: {{VERIFY: draft-ietf-oauth-browser-based-apps, section on the BFF pattern — URL, revision and quote.}}
-[^functions-aspnet]: {{VERIFY}}
-[^ticket-store]: {{VERIFY}}
-[^msal-rt]: {{VERIFY}}
-[^duende]: {{VERIFY}}
+[^entra-rt]: Microsoft Learn, [Refresh tokens in the Microsoft identity platform](https://learn.microsoft.com/en-us/entra/identity-platform/refresh-tokens) and [Configurable token lifetimes](https://learn.microsoft.com/en-us/entra/identity-platform/configurable-token-lifetimes). For External ID: "Refresh token lifetimes are not configurable in External ID" ([Migrate from Amazon Cognito to External ID](https://learn.microsoft.com/en-us/entra/external-id/customers/migrate-from-cognito-to-external-id)).
+[^entra-3pc]: Microsoft Learn, [Handle ITP in Safari and other browsers where third-party cookies are blocked](https://learn.microsoft.com/en-us/entra/identity-platform/reference-third-party-cookies-spas).
+[^rfc]: Parecki, De Ryck and Waite, [RFC 10017: OAuth 2.0 for Browser-Based Applications](https://www.rfc-editor.org/rfc/rfc10017.html), BCP 212, August 2026. See the Backend for Frontend section.
+[^owasp-html5]: OWASP, [HTML5 Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html), Local Storage.
+[^owasp-session]: OWASP, [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), Cookies.
+[^mdn-cookie]: MDN, [Set-Cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie), cookie prefixes and `SameSite`.
+[^aspnet-samesite]: Microsoft Learn, [Work with SameSite cookies in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/samesite).
+[^idweb]: [Microsoft Identity Web basics](https://github.com/AzureAD/microsoft-identity-web/wiki/Microsoft-Identity-Web-basics): "it doesn't replace AddOpenIdConnect, AddJwtBearer or AddCookie … but it uses and configure them correctly."
+[^functions-aspnet]: Microsoft Learn, [Guide for running C# Azure Functions in an isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#aspnet-core-integration), ASP.NET Core integration.
+[^ticket-store]: Microsoft Learn, [Use cookie authentication without ASP.NET Core Identity](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie) and [CookieAuthenticationOptions.SessionStore](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.authentication.cookies.cookieauthenticationoptions.sessionstore).
+[^msal-rt]: Microsoft Learn, [Differences between ADAL.NET and MSAL.NET](https://learn.microsoft.com/en-us/entra/msal/dotnet/how-to/differences-adal-msal-net).
+[^msal-cache]: Microsoft Learn, [Token cache serialization in MSAL.NET](https://learn.microsoft.com/en-us/entra/msal/dotnet/how-to/token-cache-serialization).
+[^id-tokens]: Microsoft Learn, [ID tokens in the Microsoft identity platform](https://learn.microsoft.com/en-us/entra/identity-platform/id-tokens). MSAL.NET's `IdToken.Parse` decodes the payload and reads its claims without checking the signature.
+[^duende]: Duende, [BFF Security Framework](https://docs.duendesoftware.com/bff/) and [Licensing](https://docs.duendesoftware.com/general/licensing/). Version 4.3.1 at the time of writing.
+[^blazor-bff]: Microsoft Learn, [Secure an ASP.NET Core Blazor Web App with OpenID Connect](https://learn.microsoft.com/en-us/aspnet/core/blazor/security/blazor-web-app-with-oidc), BFF version.
