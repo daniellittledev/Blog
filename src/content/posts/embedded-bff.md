@@ -2,16 +2,16 @@
 author: "Daniel Little"
 categories: ["Security", "Web"]
 date: 2026-10-13T00:00:00Z
-description: "Why browser apps should keep tokens out of the browser with a Backend-for-Frontend and SameSite cookies, what the IETF recommends, and where .NET's identity packages leave gaps."
+description: "Why browser apps should keep tokens out of the browser with a Backend-for-Frontend and SameSite cookies, why your API can be its own BFF, and where .NET's identity packages leave gaps."
 draft: true
-path: "/bff-same-site-cookies-dotnet"
+path: "/embedded-bff"
 tags: ["Security", "OAuth", "OIDC", "FSharp", "dotnet", "Azure"]
-title: "Keep Your Tokens Out of the Browser"
+title: "The Embedded BFF: Keep Your Tokens Out of the Browser"
 ---
 
-Every morning, the users of [Praisable](https://praisable.dev) were signed out. Not because they'd done anything wrong, and not because of a bug in the usual sense. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
+[Praisable](https://praisable.dev) isn't released yet, which turned out to be the best possible time to discover that its sign-in would log every user out at least once a day. Nothing was broken. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
 
-In this post I want to make the case for the alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and in my case it also fixed the daily sign-outs. Then I'll go through the less comfortable part, which is what happens when you try to build one on .NET today, and why I ended up writing a small OIDC component instead of reaching for Microsoft's packages.
+In this post I want to make the case for the alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and it removes the daily sign-out. But I'll argue for a particular shape of it. The usual BFF is another service standing in front of your API. When the API only serves your own frontend, it can be its own BFF. I'm calling that an **embedded BFF**. Then I'll go through the less comfortable part: .NET's identity packages don't really have a place for it, which is why I ended up writing a small OIDC component instead.
 
 ## The problem with tokens in the browser
 
@@ -19,7 +19,7 @@ When a single-page app runs OAuth itself, the browser ends up holding the tokens
 
 That's the core issue. Anything your JavaScript can read, any JavaScript running on your page can read. One cross-site scripting bug, or one compromised dependency in a `node_modules` folder the size of a small moon, and an attacker isn't just acting as the user while the tab is open. They can copy the refresh token and keep minting access tokens from their own machine, long after the user has closed the tab.
 
-Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra gives single-page apps refresh tokens that expire after 24 hours, and every token refreshed from one keeps that original expiry. Other clients get refresh tokens with a 90-day inactivity window, which in practice slides along as long as the user keeps coming back. Neither lifetime can be configured, including in External ID.[^entra-rt] Microsoft is explicit about the reason: "In order to minimize the risk of stolen refresh tokens, SPAs are issued tokens valid for 24 hours only."[^entra-3pc] That's a sensible trade-off from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. Which is how Praisable's users ended up with their morning ritual.
+Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra gives single-page apps refresh tokens that expire after 24 hours, and every token refreshed from one keeps that original expiry. Other clients get refresh tokens with a 90-day inactivity window, which in practice slides along as long as the user keeps coming back. Neither lifetime can be configured, including in External ID.[^entra-rt] Microsoft is explicit about the reason: "In order to minimize the risk of stolen refresh tokens, SPAs are issued tokens valid for 24 hours only."[^entra-3pc] That's a sensible trade-off from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. For a new app, a daily password prompt is not the first impression you want to make.
 
 The fix for the security problem and the fix for the usability problem turn out to be the same thing: stop giving the browser tokens.
 
@@ -75,9 +75,19 @@ There is one place where `Strict` doesn't work, and it's the sign-in itself. The
 
 Having a single origin helps a great deal. Praisable's Static Web App proxies `praisable.dev/api` to the Function App, so there's no CORS, and one cookie covers the whole app.
 
-## When the BFF is the API
+## The embedded BFF
 
-Most descriptions of the pattern assume the BFF sits in front of a separate API. It keeps an access token and attaches it to requests it forwards. In Praisable, the BFF *is* the API. That changes which tokens are worth keeping:
+The RFC, and most descriptions of the pattern, picture the BFF as its own service. It sits between the browser and your API, holds the access token, and attaches it to every request it proxies. If your API serves other clients, or you call several downstream APIs, that's the right shape.
+
+But plenty of apps have one frontend and one API that exists only to serve it. Putting a proxy in front of that API adds a service to deploy, a hop on every request, and an access token whose only job is to get from one of your processes to the other. In an embedded BFF the API takes on the BFF's job itself:
+
+- The API is the OAuth confidential client. It runs the sign-in flow and owns the session.
+- The browser holds only the session cookie, and calls the API directly.
+- There's no proxy, and no access token to forward.
+
+(Not to be confused with the RFC's "token-mediating backend", which runs the flow on the server and then hands the access token to the browser. An embedded BFF gives the browser nothing.)
+
+In Praisable, the BFF *is* the API. That changes which tokens are worth keeping:
 
 - **The ID token** proves who signed in. It's validated once, at the callback, and then dropped. The UI gets the user's profile from `GET /api/me` instead.
 - **The access token** has nowhere to go. There's no downstream API to call, so it's discarded.
@@ -100,7 +110,7 @@ The session itself is a Cosmos DB document in the user's partition. Its id is a 
 
 ## The gaps in .NET
 
-This is where I expected to install a package and move on. .NET has excellent identity libraries, and none of what follows is a criticism of them. They're good at what they're for. They just weren't built for this shape of app: an API on Azure Functions that is its own BFF, with a server-side session and no downstream API.
+This is where I expected to install a package and move on. .NET has excellent identity libraries, and none of what follows is a criticism of them. They're good at what they're for. They just weren't built for an embedded BFF: an API on Azure Functions that is its own BFF, with a server-side session and no downstream API. Broadly, the tooling assumes one of two shapes: a web app on the full ASP.NET Core host, or a BFF that is a separate proxy in front of your API.
 
 **Microsoft.Identity.Web** is the obvious first choice for "sign in to an ASP.NET Core app with Entra". By its own description, it's "the glue between the ASP.NET Core middleware and MSAL .NET". `AddMicrosoftIdentityWebApp` configures ASP.NET Core's cookie and OpenID Connect handlers, and `UseAuthentication` runs them in the request pipeline.[^idweb] Praisable's API runs on the Azure Functions isolated worker, and Microsoft is clear about what its ASP.NET Core integration leaves out: "it doesn't provide access to the ASP.NET Core middleware pipeline and routing capabilities."[^functions-aspnet] You get `HttpRequest` and `IActionResult`, but not the pipeline those authentication handlers run in. On top of that, the cookie handler's default session is the authentication ticket itself, encrypted into the cookie. Server-side sessions are possible, but need a custom `ITicketStore`.[^ticket-store] That's a lot of framework to bend for a small flow.
 
@@ -108,14 +118,14 @@ This is where I expected to install a package and move on. .NET has excellent id
 
 **Duende BFF** is the most complete BFF implementation for .NET, and if you're on a full ASP.NET Core host it's worth a serious look. It targets that host, and production use needs a license. It's free for development, testing and personal projects, and there's a community edition for small organisations.[^duende] I didn't evaluate it in depth, because it doesn't fit the Functions host.
 
-It's also telling where Microsoft's own guidance points. The ASP.NET Core docs now include a Blazor sample that uses the BFF pattern with YARP and Aspire.[^blazor-bff] The Entra docs for single-page apps, though, still lead with MSAL.js running in the browser. Outside a full ASP.NET Core host, the pattern the RFC strongly recommends is something you assemble yourself.
+It's also telling where Microsoft's own guidance points. The ASP.NET Core docs now include a Blazor sample that uses the BFF pattern, as a proxy built with YARP and Aspire.[^blazor-bff] The Entra docs for single-page apps, though, still lead with MSAL.js running in the browser. If your BFF is embedded in an API that doesn't run on the full ASP.NET Core host, the pattern the RFC strongly recommends is something you assemble yourself.
 
 Once I'd ruled those out, it became clear what was actually missing. The genuinely hard parts of OIDC were already in a dependency Praisable used, `Microsoft.IdentityModel`:
 
 - Discovery and signing key rollover: `ConfigurationManager<OpenIdConnectConfiguration>` fetches the provider's metadata and keys, caches them, and refreshes them.
 - ID token validation: `JsonWebTokenHandler` checks the signature, issuer, audience and lifetime.
 
-What was missing was the protocol glue around them. That's the gap in .NET today: there's a low-level toolkit and there are high-level frameworks, but there's no small, host-agnostic piece in between that runs the authorization code flow for a confidential client and gives you the result.
+What was missing was the protocol glue around them. That's the gap in .NET today: there's a low-level toolkit and there are high-level frameworks, but there's no small, host-agnostic piece in between that runs the authorization code flow for a confidential client and gives you the result. That piece is exactly what an embedded BFF needs.
 
 ## What filling the gap looks like
 
@@ -153,7 +163,7 @@ There's no client secret either. The API proves who it is to Entra with a signed
 
 ## Things I learned the hard way
 
-A few things came up in code review, or in production, that are worth knowing whichever way you build this:
+A few things came up in code review, or the first time it ran against the real Entra tenant, that are worth knowing whichever way you build this:
 
 - **The callback is a browser navigation, not an API call.** Every failure, including the user pressing cancel or Entra being unreachable, should redirect back to the app signed out, not return a 500 with a JSON body.
 - **Stale callbacks happen.** Back and reload will replay an old callback. It mustn't clear the login cookie of a newer sign-in that's in progress.
@@ -164,11 +174,11 @@ A few things came up in code review, or in production, that are worth knowing wh
 
 ## Where it stands
 
-{{TODO for Daniel: does production sign-in work now, and have the daily sign-outs stopped? I've deliberately not written an "it works" conclusion.}}
+{{TODO for Daniel: Praisable isn't released yet. Does sign-in work end to end in the production environment now? Add a line on status, or drop this section. I haven't written an "it works" conclusion.}}
 
 ## Should you do this?
 
-If you're building a browser app today, I think the default should be a BFF with an `HttpOnly`, `__Host-`, `SameSite` cookie, and no tokens in the browser at all. The standards body recommends it, browsers now give you the cookie attributes to do it safely, and for a SPA on a single origin it's simpler in the browser than the alternative: no token storage, no silent renew, no refresh logic in JavaScript. Just `fetch`.
+If you're building a browser app today, I think the default should be a BFF with an `HttpOnly`, `__Host-`, `SameSite` cookie, and no tokens in the browser at all. And if your API exists to serve that one frontend, don't put another service in front of it. Embed the BFF. The standards body recommends it, browsers now give you the cookie attributes to do it safely, and for a SPA on a single origin it's simpler in the browser than the alternative: no token storage, no silent renew, no refresh logic in JavaScript. Just `fetch`.
 
 On .NET the picture is less tidy. If you're on a full ASP.NET Core host, use what's there. If you're not, or you want the session to be yours, don't be afraid of the protocol. With `Microsoft.IdentityModel` handling keys and token validation, the remaining glue is small, mostly pure, and very easy to test. And at 300 lines, it's a liability I'm happy to carry.
 
