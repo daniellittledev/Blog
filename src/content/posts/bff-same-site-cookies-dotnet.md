@@ -147,8 +147,6 @@ let checkCallback (login: LoginState option) (state: string option) (code: strin
 
 Because the protocol rules are pure functions, each one gets a test: state mismatch, nonce mismatch, a missing verifier, a missing or expired login cookie, Entra's `error=` reply, an open redirect through `returnTo`, the PKCE challenge, and token error parsing. That's a level of confidence that's hard to get when the same rules are inside framework event handlers.
 
-The API authenticates to Entra without a client secret. It signs a client assertion (RFC 7523) with a certificate whose private key is non-exportable and never leaves Key Vault. The Function App's managed identity can only ask Key Vault to sign.
-
 ## Things I learned the hard way
 
 A few things came up in code review, or in production, that are worth knowing whichever way you build this:
@@ -159,13 +157,10 @@ A few things came up in code review, or in production, that are worth knowing wh
 - **`returnTo` is an open redirect waiting to happen.** Accept only a local path, and reject `//host` and backslashes, which browsers will happily treat as another host.
 - **Be careful logging IdentityModel exceptions.** Their messages can contain URLs. Log the `IDX` code and leave the message out.
 - **Sign-out to the provider's end-session endpoint is best effort.** Your own session is already gone. Send `client_id` along with `post_logout_redirect_uri`.
-- **Cross-tenant federated credentials don't work.** My first design had the Function App's managed identity act as a federated credential on the app registration, so there'd be no certificate to manage either. The first production sign-in came back to the sign-in page, because Entra answered the code redemption with `401 invalid_client`. A managed identity can only be a federated credential for an app registration in its own tenant, and an External ID tenant is a separate directory from the Azure tenant the Function App lives in. Hence the Key Vault certificate.
-
-{{VERIFY: Microsoft doc for managed identity as federated credential being same-tenant only (and user-assigned only).}}
 
 ## Where it stands
 
-{{TODO for Daniel: the outcome after the Key Vault certificate change (PR #29). Does production sign-in now work, and have the daily sign-outs stopped? I've deliberately not written an "it works" conclusion.}}
+{{TODO for Daniel: does production sign-in work now, and have the daily sign-outs stopped? I've deliberately not written an "it works" conclusion.}}
 
 ## Should you do this?
 
