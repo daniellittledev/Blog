@@ -9,7 +9,7 @@ tags: ["Security", "OAuth", "OIDC", "FSharp", "dotnet", "Azure"]
 title: "The Embedded BFF: Keep Your Tokens Out of the Browser"
 ---
 
-[Praisable](https://praisable.dev) isn't released yet, which turned out to be the best possible time to discover that its sign-in would log every user out at least once a day. Nothing was broken. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
+I've been using [Praisable](https://praisable.dev), an app I'm building to collect links, and I was being logged out every day. Nothing was broken. The app was doing exactly what it was built to do: a React single-page app using MSAL.js, the authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
 
 In this post I want to make the case for the alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and it removes the daily sign-out. But I'll argue for a particular shape of it. The usual BFF is another service standing in front of your API. When the API only serves your own frontend, it can be its own BFF. I'm calling that an **embedded BFF**. Then I'll go through the less comfortable part: .NET's identity packages don't really have a place for it, which is why I ended up writing a small OIDC component instead.
 
