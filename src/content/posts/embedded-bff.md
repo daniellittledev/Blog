@@ -9,9 +9,9 @@ tags: ["Security", "OAuth", "OIDC", "FSharp", "dotnet", "Azure"]
 title: "The Embedded BFF: Keep Your Tokens Out of the Browser"
 ---
 
-I've been building [Praisable](https://praisable.dev), but I noticed was being logged out every day. Nothing was broken. It was a standard React single-page app using MSAL.js, an authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
+I've been building [Praisable](https://praisable.dev), but I noticed I was being logged out every day. Nothing was broken. It was a standard React single-page app using MSAL.js, an authorization code flow with PKCE, and tokens in the browser. That design is widely used, well documented, and, as it turns out, no longer what the OAuth standards recommend for most browser apps.
 
-In this post I want share a better alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and it removes the daily sign-out. However, the usual BFF is another service standing in front of your API. But when you only have one service, it can be its own BFF. An **embedded BFF**. After explaining what that is, I'll go through the less comfortable part: .NET's identity packages don't support this well, which is why I ended up writing a small OIDC component instead.
+In this post I want to share a better alternative: the Backend-for-Frontend (BFF) pattern with `SameSite` cookies. It's more secure, it's simpler for the browser, and it removes the daily sign-out. However, the usual BFF is another service standing in front of your API. But when you only have one service, it can be its own BFF: an **embedded BFF**. After explaining what that is, I'll go through the less comfortable part: .NET's identity packages don't support this well, which is why I ended up writing a small OIDC component instead.
 
 ## The problem with tokens in the browser
 
@@ -19,13 +19,13 @@ When a single-page app runs OAuth itself, the browser ends up holding the tokens
 
 But that's the core issue. Anything your JavaScript can read, any JavaScript running on your page can read. One cross-site scripting bug, or one compromised dependency in a `node_modules` folder the size of a small moon, and an attacker isn't just acting as the user while the tab is open. They can copy the refresh token and keep minting access tokens from their own machine, long after the user has closed the tab.
 
-Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra gives single-page apps refresh tokens that expire after 24 hours, and every token refreshed from one keeps that original expiry. Other clients get refresh tokens with a 90-day inactivity window, which in practice slides along as long as the user keeps coming back. Neither lifetime can be configured, including in External ID. [Microsoft is explicit about the reason](https://learn.microsoft.com/en-us/entra/identity-platform/refresh-tokens): "In order to minimize the risk of stolen refresh tokens, SPAs are issued tokens valid for 24 hours only." That's a [sensible trade-off](https://learn.microsoft.com/en-us/entra/identity-platform/reference-third-party-cookies-spas) from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. For a new app, a daily password prompt is not the first impression you want to make.
+Identity providers know this, and they compensate by limiting what a browser-held refresh token is worth. Microsoft Entra gives single-page apps refresh tokens that expire after 24 hours, and every token refreshed from one keeps that original expiry. Other clients get refresh tokens with a 90-day inactivity window, which in practice slides along as long as the user keeps coming back. Neither lifetime can be configured, including in External ID.[^entra-lifetimes] [Microsoft is explicit about the reason](https://learn.microsoft.com/en-us/entra/identity-platform/reference-third-party-cookies-spas): "In order to minimize the risk of stolen refresh tokens, SPAs are issued tokens valid for 24 hours only." That's a [sensible trade-off](https://learn.microsoft.com/en-us/entra/identity-platform/refresh-tokens) from the identity provider's side. From the user's side it means being sent back to the sign-in page at least once a day, and having to type a password again whenever Entra's own session cookie has gone. For a new app, a daily password prompt is not the first impression you want to make.
 
 The fix for the security problem and the fix for the usability problem turn out to be the same thing: stop giving the browser tokens.
 
 ## What the standards recommend
 
-The standards have caught up with this. In August 2026 the IETF published [RFC 10017, OAuth 2.0 for Browser-Based Applications](https://www.rfc-editor.org/rfc/rfc10017.html), as a Best Current Practice. It walks through what malicious JavaScript can do once it runs in your app, including that it can "steal data from browser storage mechanisms (e.g., localStorage, IndexedDB)", then compares the architectures browser apps can use. The verdict on the Backend-for-Frontend is direct:
+The standards have caught up with this. In August 2026 the IETF published [RFC 10017, OAuth 2.0 for Browser-Based Applications](https://www.rfc-editor.org/rfc/rfc10017.html), as a Best Current Practice. It walks through what malicious JavaScript can do once it runs in your app, including that it can "steal data from origin-based storage mechanisms (e.g., localStorage, IndexedDB)", then compares the architectures browser apps can use. The verdict on the Backend-for-Frontend is direct:
 
 > This architecture is strongly recommended for business applications, sensitive applications, and applications that handle personal data.[^rfc]
 
@@ -91,7 +91,7 @@ let renew (now: Instant) (session: Session) (outcome: RefreshOutcome) =
     | Unreachable _ -> Renew(refreshed now session)
 ```
 
-I also store the session id as hash of the cookie's secret, so a leaked document can't be replayed as a cookie. The refresh token inside it can only be redeemed with the API's client credential, so a database leak alone doesn't give an attacker usable tokens.
+I also store the session id as a hash of the cookie's secret, so a leaked document can't be replayed as a cookie. The refresh token inside it can only be redeemed with the API's client credential, so a database leak alone doesn't give an attacker usable tokens.
 
 ## The gaps in .NET
 
@@ -125,6 +125,7 @@ If you're building a browser app today, keep tokens out of the browser and give 
 
 On .NET, if you're on ASP.NET Core, use what's there. If you're not, or you want the session to be yours, don't be afraid of the protocol. `Microsoft.IdentityModel` handles the hard parts, and the rest is small, mostly pure and easy to test. At 300 lines, it's a small cost I'm happy to carry.
 
+[^entra-lifetimes]: Microsoft Learn, [Configurable token lifetimes](https://learn.microsoft.com/en-us/entra/identity-platform/configurable-token-lifetimes). For External ID: "Refresh token lifetimes are not configurable in External ID" ([Migrate from Amazon Cognito to External ID](https://learn.microsoft.com/en-us/entra/external-id/customers/migrate-from-cognito-to-external-id)).
 [^rfc]: Parecki, De Ryck and Waite, [RFC 10017: OAuth 2.0 for Browser-Based Applications](https://www.rfc-editor.org/rfc/rfc10017.html), BCP 212, August 2026. See the Backend for Frontend section.
 [^owasp-html5]: OWASP, [HTML5 Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html), Local Storage.
 [^owasp-session]: OWASP, [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html), Cookies.
